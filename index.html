@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; font-family: 'Jost', sans-serif; }
+      html, body { margin: 0; padding: 0; background: #eef0f3; color: #1c1c1e; font-size: 14px; }
+      .page { width: 92vw; max-width: 760px; margin: 0 auto; padding: 18px 0 40px; }
+      .title { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; text-align: center; padding: 14px; border-radius: 12px; margin: 0 0 16px; font-size: 16px; }
+      .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
+      .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 6px 12px; border-radius: 6px; margin: 0 0 14px; }
+      .field { margin-bottom: 13px; }
+      .field label { display: block; font-weight: 600; margin-bottom: 5px; }
+      .req::after { content: ' *'; color: #c5221f; }
+      input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select {
+        width: 100%; padding: 11px 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; background: #fff;
+      }
+      input:focus, textarea:focus, select:focus { outline: none; border-color: #000; }
+      textarea { resize: vertical; min-height: 60px; }
+      .row { display: flex; gap: 14px; flex-wrap: wrap; }
+      .row > .field { flex: 1; min-width: 150px; }
+      .up-zone { border: 1.5px dashed #b9bdc6; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; background: #fafbfc; transition: .15s; }
+      .up-zone:hover, .up-zone.drag { border-color: #000; background: #f2f4f7; }
+      .up-zone .big { font-weight: 600; }
+      .up-zone .small { color: #6b7075; font-size: 12px; margin-top: 3px; }
+      .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; margin-top: 10px; }
+      .thumb { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #e2e4e8; aspect-ratio: 1/1; background: #f0f0f0; }
+      .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; border: none; cursor: pointer; font-size: 13px; line-height: 20px; padding: 0; }
+      .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
+      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+      button.primary { background: #000; color: #fff; border: 1px solid #000; font-weight: 700; padding: 12px 26px; border-radius: 8px; cursor: pointer; font-size: 15px; }
+      button.primary:disabled { opacity: .55; cursor: wait; }
+      .hint { color: #6b7075; font-size: 12px; margin-top: 4px; }
+      .msg { border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: none; word-break: break-word; }
+      .msg.err { background: #fdecea; border: 1px solid #f3b4ae; color: #b00020; }
+      .msg.ok { background: #e6f4ea; border: 1px solid #b7e1cd; color: #137333; }
+      .msg.ok a { color: #0b6b2b; font-weight: 700; }
+      .msg.show { display: block; }
+      /* loading overlay + spinner */
+      .overlay { position: fixed; inset: 0; background: rgba(255,255,255,.72); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 50; }
+      .overlay.show { display: flex; }
+      .loader { text-align: center; }
+      .spinner { width: 46px; height: 46px; border: 4px solid #d9dce1; border-top-color: #000; border-radius: 50%; margin: 0 auto 12px; animation: spin .8s linear infinite; }
+      .loader .lt { font-weight: 600; color: #1c1c1e; }
+      .loader .ls { font-size: 12px; color: #6b7075; margin-top: 3px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .btn-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; vertical-align: -2px; margin-right: 7px; animation: spin .7s linear infinite; }
+
+      /* ---- Mobile (phones) ---- */
+      @media (max-width: 560px) {
+        .page { width: 94vw; padding: 12px 0 34px; }
+        .title { font-size: 15px; padding: 12px; }
+        .card { padding: 13px 13px; border-radius: 10px; }
+        .row { flex-direction: column; gap: 0; }         /* stack side-by-side fields */
+        .row > .field { min-width: 0; }
+        .actions { position: sticky; bottom: 0; }
+        button.primary { width: 100%; padding: 14px; font-size: 16px; }
+        .thumbs { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+        .up-zone { padding: 18px 12px; }                 /* bigger tap target */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay" id="overlay">
+      <div class="loader">
+        <div class="spinner"></div>
+        <div class="lt" id="loaderText">Saving order…</div>
+        <div class="ls">Uploading images to Drive</div>
+      </div>
+    </div>
+    <div class="page">
+      <div class="title" id="title">New Order</div>
+
+      <div class="msg err" id="errBox"></div>
+      <div class="msg ok" id="okBox"></div>
+
+      <div class="card">
+        <div class="cap">Order Details</div>
+        <div class="row">
+          <div class="field"><label class="req" for="date">Date</label><input type="date" id="date" /></div>
+          <div class="field"><label for="expectedDelivery">Expected Delivery Date</label><input type="date" id="expectedDelivery" /></div>
+        </div>
+        <div class="field"><label class="req" for="clientName">Client Name</label><input type="text" id="clientName" placeholder="e.g. Aachal Sah" /></div>
+        <div class="field"><label for="contact">Contact Details</label><input type="tel" id="contact" placeholder="e.g. 9523163046" /></div>
+        <div class="row">
+          <div class="field">
+            <label for="salesPerson">Sales Person</label>
+            <select id="salesPerson"><option value="">— Select —</option></select>
+          </div>
+          <div class="field">
+            <label for="salesType">Sales Type</label>
+            <select id="salesType"><option value="">— Select —</option></select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="assignedMaster">Assigned Master</label>
+          <select id="assignedMaster"><option value="">— Select —</option></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cap">Product &amp; Payment</div>
+        <div class="field"><label for="product">Product Ordered / Given</label><textarea id="product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
+        <div class="row">
+          <div class="field"><label for="advance">Advance Payment</label><input type="number" id="advance" step="0.01" placeholder="e.g. 700" /></div>
+          <div class="field"><label for="totalCost">Total Cost of the Product</label><input type="number" id="totalCost" step="0.01" placeholder="e.g. 2500" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cap">Images</div>
+        <div class="field">
+          <label>Design Images (multiple)</label>
+          <div class="up-zone" id="designZone">
+            <div class="big">Tap to add images</div>
+            <div class="small">or drag &amp; drop — JPG / PNG</div>
+          </div>
+          <input type="file" id="designInput" accept="image/*" multiple style="display:none" />
+          <div class="thumbs" id="designThumbs"></div>
+        </div>
+        <div class="field">
+          <label>Measurement (multiple)</label>
+          <div class="up-zone" id="measureZone">
+            <div class="big">Tap to add images</div>
+            <div class="small">or drag &amp; drop — JPG / PNG</div>
+          </div>
+          <input type="file" id="measureInput" accept="image/*" multiple style="display:none" />
+          <div class="thumbs" id="measureThumbs"></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="autoRename" checked /> Auto-rename images (Client_Design_1, Client_Measurement_1 …)</label>
+        <div class="hint">Images are resized to save space, stored in a Drive folder per order; the sheet gets the <strong>folder link</strong>, not each image.</div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="submitBtn" onclick="onSubmit()">Save Order</button>
+      </div>
+    </div>
+
+    <script>
+      var MAX_DIM = 1600, JPEG_Q = 0.85;
+      var API_URL = "https://script.google.com/macros/s/AKfycbz8hGDdQBDp1tB4QELNDKTBR76ROPQsxpt07s3WhvPTD1pc7Zf1hFUzEWCP4mI9I-eQ/exec";
+      var designImgs = [];   // {name, mimeType, dataBase64, preview}
+      var measureImgs = [];
+
+      // CORS-safe call: POST with text/plain (no preflight), body = JSON string.
+      function api(payload) {
+        return fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        }).then(function (r) { return r.json(); });
+      }
+
+      // ---------- suggestions ----------
+      api({ action: 'suggestions' })
+        .then(function (s) {
+          if (s.systemName) document.getElementById('title').textContent = s.systemName + ' — New Order';
+          fillList('salesPerson', s.salesPerson);
+          fillList('salesType', s.salesType);
+          fillList('assignedMaster', s.assignedMaster);
+        })
+        .catch(function () { /* leave suggestion lists empty on failure */ });
+
+      function fillList(id, arr) {
+        var sel = document.getElementById(id); if (!sel) return;
+        sel.length = 1; // keep the "— Select —" placeholder, drop the rest
+        (arr || []).forEach(function (v) {
+          var o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o);
+        });
+      }
+
+      // ---------- image handling ----------
+      function wireUploader(zoneId, inputId, store, thumbsId) {
+        var zone = document.getElementById(zoneId), input = document.getElementById(inputId);
+        zone.addEventListener('click', function () { input.click(); });
+        zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('drag'); });
+        zone.addEventListener('dragleave', function () { zone.classList.remove('drag'); });
+        zone.addEventListener('drop', function (e) { e.preventDefault(); zone.classList.remove('drag'); handleFiles(e.dataTransfer.files, store, thumbsId); });
+        input.addEventListener('change', function () { handleFiles(input.files, store, thumbsId); input.value = ''; });
+      }
+
+      function handleFiles(files, store, thumbsId) {
+        Array.prototype.forEach.call(files, function (file) {
+          if (!/^image\//.test(file.type)) return;
+          resizeToBase64(file, function (res) {
+            store.push({ name: file.name, mimeType: 'image/jpeg', dataBase64: res.base64, preview: res.dataUrl });
+            renderThumbs(store, thumbsId);
+          });
+        });
+      }
+
+      function resizeToBase64(file, cb) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          var img = new Image();
+          img.onload = function () {
+            var w = img.width, h = img.height;
+            if (w > h && w > MAX_DIM) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+            else if (h >= w && h > MAX_DIM) { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+            var canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            var dataUrl = canvas.toDataURL('image/jpeg', JPEG_Q);
+            cb({ dataUrl: dataUrl, base64: dataUrl.split(',')[1] });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function renderThumbs(store, thumbsId) {
+        var c = document.getElementById(thumbsId); c.innerHTML = '';
+        store.forEach(function (im, idx) {
+          var d = document.createElement('div'); d.className = 'thumb';
+          var img = document.createElement('img'); img.src = im.preview; d.appendChild(img);
+          var x = document.createElement('button'); x.className = 'x'; x.textContent = '\u00d7';
+          x.onclick = function () { store.splice(idx, 1); renderThumbs(store, thumbsId); };
+          d.appendChild(x); c.appendChild(d);
+        });
+      }
+
+      wireUploader('designZone', 'designInput', designImgs, 'designThumbs');
+      wireUploader('measureZone', 'measureInput', measureImgs, 'measureThumbs');
+
+      // ---------- submit ----------
+      function show(id, html) { var b = document.getElementById(id); b.innerHTML = html; b.classList.add('show'); }
+      function hideMsgs() { document.getElementById('errBox').classList.remove('show'); document.getElementById('okBox').classList.remove('show'); }
+      function val(id) { return document.getElementById(id).value.trim(); }
+
+      function onSubmit() {
+        hideMsgs();
+        if (!val('clientName')) { show('errBox', 'Client Name is required.'); return; }
+
+        var payload = {
+          date: val('date'), clientName: val('clientName'), contact: val('contact'),
+          salesPerson: val('salesPerson'), salesType: val('salesType'), assignedMaster: val('assignedMaster'),
+          expectedDelivery: val('expectedDelivery'), advance: val('advance'),
+          product: val('product'), totalCost: val('totalCost'),
+          autoRename: document.getElementById('autoRename').checked,
+          designImages: designImgs.map(strip), measurementImages: measureImgs.map(strip)
+        };
+
+        var btn = document.getElementById('submitBtn');
+        var overlay = document.getElementById('overlay');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-spin"></span>Saving…';
+        overlay.classList.add('show');
+        var total = payload.designImages.length + payload.measurementImages.length;
+        document.getElementById('loaderText').textContent =
+          total ? ('Saving order & uploading ' + total + ' image' + (total > 1 ? 's' : '') + '…') : 'Saving order…';
+
+        api({ action: 'submit', payload: payload })
+          .then(function (res) {
+            btn.disabled = false; btn.textContent = 'Save Order';
+            overlay.classList.remove('show');
+            if (res.ok === false) { show('errBox', res.error || 'Save failed.'); return; }
+            show('okBox', 'Saved as <strong>' + res.orderId + '</strong>. ' +
+              (res.folderUrl ? '<a href="' + res.folderUrl + '" target="_blank">Open image folder</a>' : '(no images)'));
+            resetForm();
+          })
+          .catch(function (err) {
+            btn.disabled = false; btn.textContent = 'Save Order';
+            overlay.classList.remove('show');
+            show('errBox', (err && err.message) || 'Failed to reach the server. Check the deployment access (must be "Anyone").');
+          });
+      }
+
+      function strip(im) { return { name: im.name, mimeType: im.mimeType, dataBase64: im.dataBase64 }; }
+
+      function resetForm() {
+        ['date','expectedDelivery','clientName','contact','salesPerson','salesType','assignedMaster','product','advance','totalCost']
+          .forEach(function (id) { document.getElementById(id).value = ''; });
+        designImgs.length = 0; measureImgs.length = 0;
+        renderThumbs(designImgs, 'designThumbs'); renderThumbs(measureImgs, 'measureThumbs');
+        window.scrollTo(0, 0);
+      }
+    </script>
+  </body>
+</html>
