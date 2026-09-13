@@ -142,7 +142,7 @@
 
     <script>
       var MAX_DIM = 1600, JPEG_Q = 0.85;
-      var API_URL = "https://script.google.com/macros/s/AKfycbyZmuXuogQoZZHDHSZpet28ndPp9ZUI1IBkHv4CVl2yzL_Bahfxu08ms8cgdJqO7i6hwA/exec";
+      var API_URL = "https://script.google.com/macros/s/AKfycbzLnHVxRrs5vX7aVcTb4PeoI-8h-2sIWHg_iL-6sJLb8ArePFDrXOWlJVbp8IDvudBasw/exec";
       var designImgs = [];   // {name, mimeType, dataBase64, preview}
       var measureImgs = [];
 
@@ -158,12 +158,18 @@
       // ---------- suggestions ----------
       api({ action: 'suggestions' })
         .then(function (s) {
+          if (!s || (!s.salesPerson && !s.systemName)) {
+            show('errBox', 'Server reachable but returned no suggestions — the deployed Apps Script may be an old version. Redeploy: Manage deployments → New version.');
+            return;
+          }
           if (s.systemName) document.getElementById('title').textContent = s.systemName + ' — New Order';
           fillList('salesPerson', s.salesPerson);
           fillList('salesType', s.salesType);
           fillList('assignedMaster', s.assignedMaster);
         })
-        .catch(function () { /* leave suggestion lists empty on failure */ });
+        .catch(function () {
+          show('errBox', 'Could not reach the server for suggestions. Check the deployment: Execute as "Me", Access "Anyone", and redeploy a New version.');
+        });
 
       function fillList(id, arr) {
         var sel = document.getElementById(id); if (!sel) return;
