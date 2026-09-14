@@ -170,7 +170,7 @@
       }
 
       // ---------- multi-select widget ----------
-      function MultiSelect(mountId, placeholder) {
+      function MultiSelect(mountId, placeholder, single) {
         var mount = document.getElementById(mountId);
         var selected = [], options = [];
         mount.className = 'ms';
@@ -201,9 +201,14 @@
           });
         }
         function toggle(v, on) {
-          var i = selected.indexOf(v);
-          if (on && i < 0) selected.push(v);
-          if (!on && i >= 0) selected.splice(i, 1);
+          if (single) {
+            selected = on ? [v] : [];
+            panel.classList.remove('open'); control.classList.remove('open');
+          } else {
+            var i = selected.indexOf(v);
+            if (on && i < 0) selected.push(v);
+            if (!on && i >= 0) selected.splice(i, 1);
+          }
           renderControl(); renderPanel();
         }
         control.addEventListener('click', function () {
@@ -221,7 +226,7 @@
           clear: function () { selected = []; renderControl(); renderPanel(); }
         };
       }
-      var msSalesPerson = MultiSelect('salesPerson', '— Select (one or more) —');
+      var msSalesPerson = MultiSelect('salesPerson', '— Select —', true);
       var msSalesType = MultiSelect('salesType', '— Select (one or more) —');
       var msAssignedMaster = MultiSelect('assignedMaster', '— Select (one or more) —');
 
