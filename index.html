@@ -49,6 +49,20 @@
       .loader .ls { font-size: 12px; color: #6b7075; margin-top: 3px; }
       @keyframes spin { to { transform: rotate(360deg); } }
       .btn-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; vertical-align: -2px; margin-right: 7px; animation: spin .7s linear infinite; }
+      /* multi-select */
+      .ms { position: relative; }
+      .ms-control { min-height: 46px; border: 1px solid #ccc; border-radius: 8px; padding: 7px 9px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; cursor: pointer; background: #fff; }
+      .ms-control.open { border-color: #000; }
+      .ms-ph { color: #9aa0a6; font-size: 16px; }
+      .ms-chip { background: #000; color: #fff; border-radius: 6px; padding: 4px 9px; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; }
+      .ms-chip b { cursor: pointer; font-weight: 700; line-height: 1; }
+      .ms-panel { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 8px 22px rgba(0,0,0,.14); max-height: 240px; overflow: auto; display: none; }
+      .ms-panel.open { display: block; }
+      .ms-opt { display: flex; align-items: center; gap: 9px; padding: 11px 12px; cursor: pointer; font-size: 15px; border-bottom: 1px solid #f0f1f3; }
+      .ms-opt:last-child { border-bottom: 0; }
+      .ms-opt:hover { background: #f2f4f7; }
+      .ms-opt input { width: 17px; height: 17px; }
+      .ms-empty { padding: 12px; color: #9aa0a6; font-size: 13px; }
 
       /* ---- Mobile (phones) ---- */
       @media (max-width: 560px) {
@@ -88,17 +102,17 @@
         <div class="field"><label for="contact">Contact Details</label><input type="tel" id="contact" placeholder="e.g. 9523163046" /></div>
         <div class="row">
           <div class="field">
-            <label for="salesPerson">Sales Person</label>
-            <select id="salesPerson"><option value="">— Select —</option></select>
+            <label>Sales Person</label>
+            <div id="salesPerson"></div>
           </div>
           <div class="field">
-            <label for="salesType">Sales Type</label>
-            <select id="salesType"><option value="">— Select —</option></select>
+            <label>Sales Type</label>
+            <div id="salesType"></div>
           </div>
         </div>
         <div class="field">
-          <label for="assignedMaster">Assigned Master</label>
-          <select id="assignedMaster"><option value="">— Select —</option></select>
+          <label>Assigned Master</label>
+          <div id="assignedMaster"></div>
         </div>
       </div>
 
@@ -155,6 +169,62 @@
         }).then(function (r) { return r.json(); });
       }
 
+      // ---------- multi-select widget ----------
+      function MultiSelect(mountId, placeholder) {
+        var mount = document.getElementById(mountId);
+        var selected = [], options = [];
+        mount.className = 'ms';
+        var control = document.createElement('div'); control.className = 'ms-control';
+        var panel = document.createElement('div'); panel.className = 'ms-panel';
+        mount.appendChild(control); mount.appendChild(panel);
+
+        function renderControl() {
+          control.innerHTML = '';
+          if (!selected.length) {
+            var ph = document.createElement('span'); ph.className = 'ms-ph'; ph.textContent = placeholder; control.appendChild(ph);
+          } else selected.forEach(function (v) {
+            var c = document.createElement('span'); c.className = 'ms-chip';
+            c.appendChild(document.createTextNode(v));
+            var x = document.createElement('b'); x.textContent = '\u00d7';
+            x.onclick = function (e) { e.stopPropagation(); toggle(v, false); };
+            c.appendChild(x); control.appendChild(c);
+          });
+        }
+        function renderPanel() {
+          panel.innerHTML = '';
+          if (!options.length) { var e = document.createElement('div'); e.className = 'ms-empty'; e.textContent = 'No options — fill the Order Suggestions sheet.'; panel.appendChild(e); return; }
+          options.forEach(function (v) {
+            var row = document.createElement('label'); row.className = 'ms-opt';
+            var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = selected.indexOf(v) >= 0;
+            cb.onchange = function () { toggle(v, cb.checked); };
+            row.appendChild(cb); row.appendChild(document.createTextNode(v)); panel.appendChild(row);
+          });
+        }
+        function toggle(v, on) {
+          var i = selected.indexOf(v);
+          if (on && i < 0) selected.push(v);
+          if (!on && i >= 0) selected.splice(i, 1);
+          renderControl(); renderPanel();
+        }
+        control.addEventListener('click', function () {
+          var open = !panel.classList.contains('open');
+          panel.classList.toggle('open', open); control.classList.toggle('open', open);
+          if (open) renderPanel();
+        });
+        document.addEventListener('click', function (e) {
+          if (!mount.contains(e.target)) { panel.classList.remove('open'); control.classList.remove('open'); }
+        });
+        renderControl();
+        return {
+          setOptions: function (arr) { options = arr || []; renderPanel(); },
+          value: function () { return selected.slice(); },
+          clear: function () { selected = []; renderControl(); renderPanel(); }
+        };
+      }
+      var msSalesPerson = MultiSelect('salesPerson', '— Select (one or more) —');
+      var msSalesType = MultiSelect('salesType', '— Select (one or more) —');
+      var msAssignedMaster = MultiSelect('assignedMaster', '— Select (one or more) —');
+
       // ---------- suggestions ----------
       api({ action: 'suggestions' })
         .then(function (s) {
@@ -163,9 +233,9 @@
             return;
           }
           if (s.systemName) document.getElementById('title').textContent = s.systemName + ' — New Order';
-          fillList('salesPerson', s.salesPerson);
-          fillList('salesType', s.salesType);
-          fillList('assignedMaster', s.assignedMaster);
+          msSalesPerson.setOptions(s.salesPerson);
+          msSalesType.setOptions(s.salesType);
+          msAssignedMaster.setOptions(s.assignedMaster);
         })
         .catch(function () {
           show('errBox', 'Could not reach the server for suggestions. Check the deployment: Execute as "Me", Access "Anyone", and redeploy a New version.');
@@ -173,11 +243,12 @@
 
       function fillList(id, arr) {
         var sel = document.getElementById(id); if (!sel) return;
-        sel.length = 1; // keep the "— Select —" placeholder, drop the rest
+        sel.length = 1;
         (arr || []).forEach(function (v) {
           var o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o);
         });
       }
+
 
       // ---------- image handling ----------
       function wireUploader(zoneId, inputId, store, thumbsId) {
@@ -242,7 +313,9 @@
 
         var payload = {
           date: val('date'), clientName: val('clientName'), contact: val('contact'),
-          salesPerson: val('salesPerson'), salesType: val('salesType'), assignedMaster: val('assignedMaster'),
+          salesPerson: msSalesPerson.value().join(', '),
+          salesType: msSalesType.value().join(', '),
+          assignedMaster: msAssignedMaster.value().join(', '),
           expectedDelivery: val('expectedDelivery'), advance: val('advance'),
           product: val('product'), totalCost: val('totalCost'),
           autoRename: document.getElementById('autoRename').checked,
@@ -277,8 +350,9 @@
       function strip(im) { return { name: im.name, mimeType: im.mimeType, dataBase64: im.dataBase64 }; }
 
       function resetForm() {
-        ['date','expectedDelivery','clientName','contact','salesPerson','salesType','assignedMaster','product','advance','totalCost']
+        ['date','expectedDelivery','clientName','contact','product','advance','totalCost']
           .forEach(function (id) { document.getElementById(id).value = ''; });
+        msSalesPerson.clear(); msSalesType.clear(); msAssignedMaster.clear();
         designImgs.length = 0; measureImgs.length = 0;
         renderThumbs(designImgs, 'designThumbs'); renderThumbs(measureImgs, 'measureThumbs');
         window.scrollTo(0, 0);
