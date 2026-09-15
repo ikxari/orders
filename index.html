@@ -100,7 +100,7 @@
             <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
             <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
           </div>
-          <div class="field"><label>Client Name *</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
+          <div class="field"><label>Client Name</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
           <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
           <div class="grid2">
             <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
@@ -148,8 +148,8 @@
           <div class="sub">Office Boy logs every visitor in a few taps.</div>
           <div class="stat" id="g_stat">Today — Visitors: … · Ordered: …</div>
           <div class="grid2">
-            <div class="field"><label>Customer Name *</label><input type="text" id="g_name" placeholder="Customer name" /></div>
-            <div class="field"><label>Mobile Number *</label><input type="tel" id="g_mobile" inputmode="numeric" maxlength="10" placeholder="9876543210" /></div>
+            <div class="field"><label>Customer Name</label><input type="text" id="g_name" placeholder="Customer name" /></div>
+            <div class="field"><label>Mobile Number</label><input type="tel" id="g_mobile" inputmode="numeric" maxlength="10" placeholder="9876543210" /></div>
           </div>
           <div class="grid2">
             <div class="field"><label>How did you hear about us?</label><select id="g_source"></select></div>
@@ -159,9 +159,21 @@
             <div class="field"><label>Product Purchased / Ordered</label>
               <select id="g_purchased" onchange="toggleReason()"><option value="">— Select —</option><option>Yes</option><option>No</option></select>
             </div>
-            <div class="field" id="g_reasonWrap" style="display:none"><label>If No — why not? (reason)</label>
-              <input type="text" id="g_notBuyReason" placeholder="e.g. Price high, size issue, just browsing" />
+            <div class="field" id="g_reasonWrap" style="display:none"><label>If No — why not?</label>
+              <select id="g_notBuyReason" onchange="toggleOther()">
+                <option value="">— Select reason —</option>
+                <option>Price</option>
+                <option>Design</option>
+                <option>Size</option>
+                <option>Colour</option>
+                <option>Visit Later</option>
+                <option>Just Surfing</option>
+                <option>Other (Please Tell Us)</option>
+              </select>
             </div>
+          </div>
+          <div class="field" id="g_otherWrap" style="display:none"><label>Please tell us the reason</label>
+            <input type="text" id="g_notBuyOther" placeholder="Type the reason" />
           </div>
           <div class="err" id="g_err"></div>
           <button class="btn" id="g_submit" onclick="submitGuard()">Save Visitor</button>
@@ -173,8 +185,8 @@
 
     <script>
       /* ===== two backends ===== */
-      var SALES_API    = "https://script.google.com/macros/s/AKfycbzLnHVxRrs5vX7aVcTb4PeoI-8h-2sIWHg_iL-6sJLb8ArePFDrXOWlJVbp8IDvudBasw/exec";
-      var SECURITY_API = "https://script.google.com/macros/s/AKfycbzz36YIlBlFuU-DKvz0vFODeUQYWyMk8Xi9z9lvJ6z7HKrB44Z77dCWdxCqut4ki1LRhg/exec";
+      var SECURITY_API = "https://script.google.com/macros/s/AKfycbyHMYLiCRRW7S75aR1csdBdh9i1HR35mCeq725QjQCdzgFfXkTjpVEOScGos648WavA-w/exec";
+      var SALES_API    = "https://script.google.com/macros/s/AKfycbyHMYLiCRRW7S75aR1csdBdh9i1HR35mCeq725QjQCdzgFfXkTjpVEOScGos648WavA-w/exec";
 
       var MAX_DIM = 1600, JPEG_Q = 0.85;
 
@@ -243,7 +255,6 @@
       function sv(id){ return document.getElementById(id).value.trim(); }
       function submitSales(){
         var err=document.getElementById('s_err'), ok=document.getElementById('s_ok'); err.textContent=''; ok.classList.remove('show');
-        if(!sv('s_clientName')){ err.textContent='Client Name is required.'; return; }
         var payload={ date:sv('s_date'), clientName:sv('s_clientName'), contact:sv('s_contact'),
           salesPerson:msSalesPerson.value().join(', '), salesType:msSalesType.value().join(', '), assignedMaster:msAssignedMaster.value().join(', '),
           expectedDelivery:sv('s_expectedDelivery'), advance:sv('s_advance'), product:sv('s_product'), totalCost:sv('s_totalCost'),
@@ -276,13 +287,14 @@
           .catch(function(){});
       }
       function updateStat(v,o){ document.getElementById('g_stat').innerHTML='Today &mdash; Visitors: <b>'+(v||0)+'</b> &middot; Ordered: <b>'+(o||0)+'</b>'; }
-      function toggleReason(){ document.getElementById('g_reasonWrap').style.display = (document.getElementById('g_purchased').value==='No')?'block':'none'; }
+      function toggleReason(){ var no=document.getElementById('g_purchased').value==='No'; document.getElementById('g_reasonWrap').style.display=no?'block':'none'; if(!no){ document.getElementById('g_otherWrap').style.display='none'; } }
+      function toggleOther(){ document.getElementById('g_otherWrap').style.display=(document.getElementById('g_notBuyReason').value==='Other (Please Tell Us)')?'block':'none'; }
       function submitGuard(){
         var err=document.getElementById('g_err'); err.textContent='';
         var name=sv('g_name'), mobile=document.getElementById('g_mobile').value.replace(/\D/g,'');
-        if(!name){ err.textContent='Enter the customer name.'; return; }
-        if(!/^\d{10}$/.test(mobile)){ err.textContent='Mobile must be exactly 10 digits.'; return; }
-        var payload={ name:name, mobile:mobile, source:sv('g_source'), staffEmail:sv('g_staffEmail'), purchased:sv('g_purchased'), notBuyReason:sv('g_notBuyReason') };
+        var reason=sv('g_notBuyReason');
+        if(reason==='Other (Please Tell Us)') reason=sv('g_notBuyOther')||'Other';
+        var payload={ name:name, mobile:mobile, source:sv('g_source'), staffEmail:sv('g_staffEmail'), purchased:sv('g_purchased'), notBuyReason:reason };
         var btn=document.getElementById('g_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
         api(SECURITY_API,{action:'saveVisitor',payload:payload})
           .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor';
@@ -290,7 +302,7 @@
             var d=res.res||{}; toast('Saved! Visitor #'+d.id,'ok'); updateStat(d.todayVisitors,d.todayOrdered); resetGuard(); })
           .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
       }
-      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; document.getElementById('g_notBuyReason').value=''; ['g_source','g_staffEmail','g_purchased'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); toggleReason(); document.getElementById('g_name').focus(); }
+      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; document.getElementById('g_notBuyOther').value=''; ['g_source','g_staffEmail','g_purchased','g_notBuyReason'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); toggleReason(); document.getElementById('g_name').focus(); }
       document.getElementById('g_mobile').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
     </script>
   </body>
