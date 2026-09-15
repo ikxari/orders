@@ -150,7 +150,7 @@
           </div>
           <div class="grid2">
             <div class="field"><label>How did you hear about us?</label><select id="g_source"></select></div>
-            <div class="field"><label>Product Name (Category)</label><select id="g_itemType"></select></div>
+            <div class="field"><label>Product Name (Category)</label><input type="text" id="g_itemType" list="g_itemList" autocomplete="off" placeholder="Type or pick" /><datalist id="g_itemList"></datalist></div>
           </div>
           <div class="grid2">
             <div class="field"><label>Branch</label><select id="g_branch"></select></div>
@@ -256,11 +256,12 @@
 
       /* ===== SECURITY ===== */
       function fillSel(id,arr,ph){ var sel=document.getElementById(id); sel.innerHTML=''; var p=document.createElement('option'); p.value=''; p.textContent=ph||'— Select —'; sel.appendChild(p); (arr||[]).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}); }
+      function fillDatalist(id,arr){ var dl=document.getElementById(id); dl.innerHTML=''; (arr||[]).forEach(function(v){var o=document.createElement('option');o.value=v;dl.appendChild(o);}); }
       function loadSecurityOptions(){
         if(SECURITY_API.indexOf('PASTE_')===0){ document.getElementById('g_err').textContent='Set SECURITY_API URL in the file first.'; return; }
         securityLoaded=true; setFollowup(); showLoader();
         api(SECURITY_API,{action:'formOptions'})
-          .then(function(o){ hideLoader(); fillSel('g_source',o.sources,'Select source'); fillSel('g_itemType',o.items,'Select category'); fillSel('g_branch',o.branches,'Select branch'); fillSel('g_staffEmail',o.staff,'Select salesman'); })
+          .then(function(o){ hideLoader(); fillSel('g_source',o.sources,'Select source'); fillDatalist('g_itemList',o.items); fillSel('g_branch',o.branches,'Select branch'); fillSel('g_staffEmail',o.staff,'Select salesman'); })
           .catch(function(){ hideLoader(); securityLoaded=false; document.getElementById('g_err').textContent='Could not load Security options — check SECURITY_API deployment.'; });
       }
       function setFollowup(){ var d=new Date(); d.setDate(d.getDate()+3); document.getElementById('g_followup').value=d.toISOString().slice(0,10); }
@@ -277,7 +278,7 @@
             toast('Saved! Visitor #'+res.id,'ok'); resetGuard(); })
           .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
       }
-      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; ['g_source','g_itemType','g_branch','g_staffEmail'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); setFollowup(); document.getElementById('g_name').focus(); }
+      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; document.getElementById('g_itemType').value=''; ['g_source','g_branch','g_staffEmail'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); setFollowup(); document.getElementById('g_name').focus(); }
       document.getElementById('g_mobile').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
     </script>
   </body>
