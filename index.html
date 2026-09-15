@@ -4,364 +4,281 @@
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>IKXARI — Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-      * { box-sizing: border-box; font-family: 'Jost', sans-serif; }
+      * { box-sizing: border-box; font-family: 'Jost', sans-serif; -webkit-tap-highlight-color: transparent; }
       html, body { margin: 0; padding: 0; background: #eef0f3; color: #1c1c1e; font-size: 14px; }
-      .page { width: 92vw; max-width: 760px; margin: 0 auto; padding: 18px 0 40px; }
-      .title { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; text-align: center; padding: 14px; border-radius: 12px; margin: 0 0 16px; font-size: 16px; }
-      .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; }
-      .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 6px 12px; border-radius: 6px; margin: 0 0 14px; }
-      .field { margin-bottom: 13px; }
-      .field label { display: block; font-weight: 600; margin-bottom: 5px; }
-      .req::after { content: ' *'; color: #c5221f; }
+      .page { width: 92vw; max-width: 920px; margin: 0 auto; padding: 18px 0 46px; }
+
+      .logo { display: flex; align-items: center; gap: 11px; justify-content: center; margin-bottom: 14px; }
+      .logo .dot { width: 42px; height: 42px; border-radius: 11px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; letter-spacing: 1px; }
+      .logo h1 { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
+      .logo .tag { font-size: 11.5px; color: #6b7075; margin-top: 1px; }
+
+      .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+      .tabs button { padding: 10px 20px; border-radius: 30px; border: 1px solid #d5d8dd; background: #fff; color: #4b4f56; font-family: 'Jost'; font-size: 14px; font-weight: 600; cursor: pointer; transition: .15s; }
+      .tabs button.active { background: #000; color: #fff; border-color: #000; }
+
+      .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 14px; padding: 18px 18px; box-shadow: 0 6px 22px rgba(0,0,0,.05); margin-bottom: 14px; }
+      .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 7px 12px; border-radius: 7px; margin: 0 0 14px; }
+      .sub { font-size: 12.5px; color: #6b7075; text-align: center; margin: -8px 0 16px; }
+
+      .field { margin-bottom: 14px; }
+      .field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
       input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select {
-        width: 100%; padding: 11px 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; background: #fff;
+        width: 100%; padding: 12px 13px; font-size: 16px; border: 1px solid #ccc; border-radius: 9px; background: #fff; color: #1c1c1e; outline: none; transition: .15s;
       }
-      input:focus, textarea:focus, select:focus { outline: none; border-color: #000; }
-      textarea { resize: vertical; min-height: 60px; }
-      .row { display: flex; gap: 14px; flex-wrap: wrap; }
-      .row > .field { flex: 1; min-width: 150px; }
-      .up-zone { border: 1.5px dashed #b9bdc6; border-radius: 10px; padding: 14px; text-align: center; cursor: pointer; background: #fafbfc; transition: .15s; }
-      .up-zone:hover, .up-zone.drag { border-color: #000; background: #f2f4f7; }
-      .up-zone .big { font-weight: 600; }
-      .up-zone .small { color: #6b7075; font-size: 12px; margin-top: 3px; }
-      .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; margin-top: 10px; }
-      .thumb { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #e2e4e8; aspect-ratio: 1/1; background: #f0f0f0; }
-      .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-      .thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; border: none; cursor: pointer; font-size: 13px; line-height: 20px; padding: 0; }
-      .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
-      .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
-      button.primary { background: #000; color: #fff; border: 1px solid #000; font-weight: 700; padding: 12px 26px; border-radius: 8px; cursor: pointer; font-size: 15px; }
-      button.primary:disabled { opacity: .55; cursor: wait; }
-      .hint { color: #6b7075; font-size: 12px; margin-top: 4px; }
-      .msg { border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: none; word-break: break-word; }
-      .msg.err { background: #fdecea; border: 1px solid #f3b4ae; color: #b00020; }
-      .msg.ok { background: #e6f4ea; border: 1px solid #b7e1cd; color: #137333; }
-      .msg.ok a { color: #0b6b2b; font-weight: 700; }
-      .msg.show { display: block; }
-      /* loading overlay + spinner */
-      .overlay { position: fixed; inset: 0; background: rgba(255,255,255,.72); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 50; }
-      .overlay.show { display: flex; }
-      .loader { text-align: center; }
-      .spinner { width: 46px; height: 46px; border: 4px solid #d9dce1; border-top-color: #000; border-radius: 50%; margin: 0 auto 12px; animation: spin .8s linear infinite; }
-      .loader .lt { font-weight: 600; color: #1c1c1e; }
-      .loader .ls { font-size: 12px; color: #6b7075; margin-top: 3px; }
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .btn-spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; vertical-align: -2px; margin-right: 7px; animation: spin .7s linear infinite; }
+      input:focus, textarea:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
+      textarea { resize: vertical; min-height: 62px; }
+      input::placeholder, textarea::placeholder { color: #9aa0a6; }
+
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; gap: 0; } }
+
       /* multi-select */
       .ms { position: relative; }
-      .ms-control { min-height: 46px; border: 1px solid #ccc; border-radius: 8px; padding: 7px 9px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; cursor: pointer; background: #fff; }
+      .ms-control { min-height: 46px; border: 1px solid #ccc; border-radius: 9px; padding: 7px 9px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; cursor: pointer; background: #fff; }
       .ms-control.open { border-color: #000; }
       .ms-ph { color: #9aa0a6; font-size: 16px; }
       .ms-chip { background: #000; color: #fff; border-radius: 6px; padding: 4px 9px; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; }
       .ms-chip b { cursor: pointer; font-weight: 700; line-height: 1; }
-      .ms-panel { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 8px 22px rgba(0,0,0,.14); max-height: 240px; overflow: auto; display: none; }
+      .ms-panel { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid #ccc; border-radius: 9px; box-shadow: 0 8px 22px rgba(0,0,0,.14); max-height: 240px; overflow: auto; display: none; }
       .ms-panel.open { display: block; }
       .ms-opt { display: flex; align-items: center; gap: 9px; padding: 11px 12px; cursor: pointer; font-size: 15px; border-bottom: 1px solid #f0f1f3; }
-      .ms-opt:last-child { border-bottom: 0; }
-      .ms-opt:hover { background: #f2f4f7; }
+      .ms-opt:last-child { border-bottom: 0; } .ms-opt:hover { background: #f2f4f7; }
       .ms-opt input { width: 17px; height: 17px; }
       .ms-empty { padding: 12px; color: #9aa0a6; font-size: 13px; }
 
-      /* ---- Mobile (phones) ---- */
-      @media (max-width: 560px) {
-        .page { width: 94vw; padding: 12px 0 34px; }
-        .title { font-size: 15px; padding: 12px; }
-        .card { padding: 13px 13px; border-radius: 10px; }
-        .row { flex-direction: column; gap: 0; }         /* stack side-by-side fields */
-        .row > .field { min-width: 0; }
-        .actions { position: sticky; bottom: 0; }
-        button.primary { width: 100%; padding: 14px; font-size: 16px; }
-        .thumbs { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
-        .up-zone { padding: 18px 12px; }                 /* bigger tap target */
-      }
+      /* image uploaders */
+      .up-zone { border: 1.5px dashed #b9bdc6; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; background: #fafbfc; }
+      .up-zone:hover, .up-zone.drag { border-color: #000; background: #f2f4f7; }
+      .up-zone .big { font-weight: 600; } .up-zone .small { color: #6b7075; font-size: 12px; margin-top: 3px; }
+      .thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 8px; margin-top: 10px; }
+      .thumb { position: relative; border-radius: 8px; overflow: hidden; border: 1px solid #e2e4e8; aspect-ratio: 1/1; background: #f0f0f0; }
+      .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; border: none; cursor: pointer; font-size: 13px; line-height: 20px; padding: 0; }
+      .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
+
+      .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Jost'; font-size: 16px; font-weight: 700; color: #fff; background: #000; transition: .15s; margin-top: 6px; }
+      .btn:active { transform: translateY(1px); } .btn:disabled { opacity: .55; cursor: wait; }
+      .spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; margin-right: 8px; }
+      @keyframes sp { to { transform: rotate(360deg); } }
+      .hint { color: #6b7075; font-size: 12px; margin-top: 4px; }
+      .err { color: #b00020; font-size: 12.5px; min-height: 16px; margin: 6px 0; }
+      .ok { background: #e6f4ea; border: 1px solid #b7e1cd; color: #137333; border-radius: 8px; padding: 10px; margin-top: 6px; display: none; word-break: break-word; }
+      .ok.show { display: block; } .ok a { color: #0b6b2b; font-weight: 700; }
+      .foot { text-align: center; color: #9aa0a6; font-size: 11px; margin-top: 8px; }
+
+      .faceLoader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(238,240,243,.92); backdrop-filter: blur(3px); }
+      .faceLoader.hide { display: none; }
+      .loading-text { font-size: 34px; font-weight: 800; letter-spacing: 6px; text-transform: uppercase; background: linear-gradient(90deg,#cfd2d8 0%,#111 50%,#cfd2d8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shimmer 1.7s linear infinite; }
+      @keyframes shimmer { to { background-position: 200% center; } }
+      .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 13px 20px; border-radius: 11px; font-size: 13.5px; z-index: 10001; opacity: 0; transition: .3s; box-shadow: 0 12px 30px rgba(0,0,0,.25); max-width: 90vw; text-align: center; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      .toast.ok { background: #137333; } .toast.err { background: #b00020; }
+      .hidden { display: none; }
     </style>
   </head>
   <body>
-    <div class="overlay" id="overlay">
-      <div class="loader">
-        <div class="spinner"></div>
-        <div class="lt" id="loaderText">Saving order…</div>
-        <div class="ls">Uploading images to Drive</div>
-      </div>
-    </div>
+    <div class="faceLoader" id="faceLoader"><div class="loading-text">IKXARI</div></div>
+    <div class="toast" id="toast"></div>
+
     <div class="page">
-      <div class="title" id="title">New Order</div>
+      <div class="tabs">
+        <button id="tabSales" class="active" onclick="switchTab('sales')">Sales Employee</button>
+        <button id="tabSecurity" onclick="switchTab('security')">Security</button>
+      </div>
 
-      <div class="msg err" id="errBox"></div>
-      <div class="msg ok" id="okBox"></div>
-
-      <div class="card">
-        <div class="cap">Order Details</div>
-        <div class="row">
-          <div class="field"><label class="req" for="date">Date</label><input type="date" id="date" /></div>
-          <div class="field"><label for="expectedDelivery">Expected Delivery Date</label><input type="date" id="expectedDelivery" /></div>
+      <!-- ============ SALES EMPLOYEE ============ -->
+      <div id="salesPanel">
+        <div class="card">
+          <div class="cap">Order Details</div>
+          <div class="grid2">
+            <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
+            <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
+          </div>
+          <div class="field"><label>Client Name *</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
+          <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
+          <div class="grid2">
+            <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
+            <div class="field"><label>Sales Type</label><div id="s_salesType"></div></div>
+          </div>
+          <div class="field"><label>Assigned Master</label><div id="s_assignedMaster"></div></div>
         </div>
-        <div class="field"><label class="req" for="clientName">Client Name</label><input type="text" id="clientName" placeholder="e.g. Aachal Sah" /></div>
-        <div class="field"><label for="contact">Contact Details</label><input type="tel" id="contact" placeholder="e.g. 9523163046" /></div>
-        <div class="row">
+
+        <div class="card">
+          <div class="cap">Product &amp; Payment</div>
+          <div class="field"><label>Product Ordered / Given</label><textarea id="s_product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Advance Payment</label><input type="number" id="s_advance" step="0.01" placeholder="700" /></div>
+            <div class="field"><label>Total Cost</label><input type="number" id="s_totalCost" step="0.01" placeholder="2500" /></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cap">Images</div>
           <div class="field">
-            <label>Sales Person</label>
-            <div id="salesPerson"></div>
+            <label>Design Images (multiple)</label>
+            <div class="up-zone" id="s_designZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+            <input type="file" id="s_designInput" accept="image/*" multiple style="display:none" />
+            <div class="thumbs" id="s_designThumbs"></div>
           </div>
           <div class="field">
-            <label>Sales Type</label>
-            <div id="salesType"></div>
+            <label>Measurement (multiple)</label>
+            <div class="up-zone" id="s_measureZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+            <input type="file" id="s_measureInput" accept="image/*" multiple style="display:none" />
+            <div class="thumbs" id="s_measureThumbs"></div>
           </div>
+          <label class="toggle"><input type="checkbox" id="s_autoRename" checked /> Auto-rename images</label>
+          <div class="hint">Images stored in a Drive folder per order; the sheet gets the folder link.</div>
         </div>
-        <div class="field">
-          <label>Assigned Master</label>
-          <div id="assignedMaster"></div>
+
+        <div class="err" id="s_err"></div>
+        <div class="ok" id="s_ok"></div>
+        <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
+      </div>
+
+      <!-- ============ SECURITY ============ -->
+      <div id="securityPanel" class="hidden">
+        <div class="card">
+          <div class="cap">New Visitor</div>
+          <div class="sub">Security logs every visitor in a few taps.</div>
+          <div class="grid2">
+            <div class="field"><label>Customer Name *</label><input type="text" id="g_name" placeholder="Customer name" /></div>
+            <div class="field"><label>Mobile Number *</label><input type="tel" id="g_mobile" inputmode="numeric" maxlength="10" placeholder="9876543210" /></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>How did you hear about us?</label><select id="g_source"></select></div>
+            <div class="field"><label>Product Name (Category)</label><select id="g_itemType"></select></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Branch</label><select id="g_branch"></select></div>
+            <div class="field"><label>Salesman</label><select id="g_staffEmail"></select></div>
+          </div>
+          <div class="field"><label>Next Follow-up Date (auto)</label><input type="date" id="g_followup" readonly /></div>
+          <div class="err" id="g_err"></div>
+          <button class="btn" id="g_submit" onclick="submitGuard()">Save Visitor</button>
         </div>
       </div>
 
-      <div class="card">
-        <div class="cap">Product &amp; Payment</div>
-        <div class="field"><label for="product">Product Ordered / Given</label><textarea id="product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
-        <div class="row">
-          <div class="field"><label for="advance">Advance Payment</label><input type="number" id="advance" step="0.01" placeholder="e.g. 700" /></div>
-          <div class="field"><label for="totalCost">Total Cost of the Product</label><input type="number" id="totalCost" step="0.01" placeholder="e.g. 2500" /></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="cap">Images</div>
-        <div class="field">
-          <label>Design Images (multiple)</label>
-          <div class="up-zone" id="designZone">
-            <div class="big">Tap to add images</div>
-            <div class="small">or drag &amp; drop — JPG / PNG</div>
-          </div>
-          <input type="file" id="designInput" accept="image/*" multiple style="display:none" />
-          <div class="thumbs" id="designThumbs"></div>
-        </div>
-        <div class="field">
-          <label>Measurement (multiple)</label>
-          <div class="up-zone" id="measureZone">
-            <div class="big">Tap to add images</div>
-            <div class="small">or drag &amp; drop — JPG / PNG</div>
-          </div>
-          <input type="file" id="measureInput" accept="image/*" multiple style="display:none" />
-          <div class="thumbs" id="measureThumbs"></div>
-        </div>
-        <label class="toggle"><input type="checkbox" id="autoRename" checked /> Auto-rename images (Client_Design_1, Client_Measurement_1 …)</label>
-        <div class="hint">Images are resized to save space, stored in a Drive folder per order; the sheet gets the <strong>folder link</strong>, not each image.</div>
-      </div>
-
-      <div class="actions">
-        <button class="primary" id="submitBtn" onclick="onSubmit()">Save Order</button>
-      </div>
+      <div class="foot">Built by Somnath Karmakar</div>
     </div>
 
     <script>
+      /* ===== two backends ===== */
+      var SALES_API    = "https://script.google.com/macros/s/AKfycbzLnHVxRrs5vX7aVcTb4PeoI-8h-2sIWHg_iL-6sJLb8ArePFDrXOWlJVbp8IDvudBasw/exec";
+      var SECURITY_API = "https://script.google.com/macros/s/AKfycbx1gOlLbnIpXS3GpfWHdnjNh5Jg8tZS1d7oPgSx6FiM1jb0qIizTqBuKJ4obq0la7Ryiw/exec";
+
       var MAX_DIM = 1600, JPEG_Q = 0.85;
-      var API_URL = "https://script.google.com/macros/s/AKfycbzLnHVxRrs5vX7aVcTb4PeoI-8h-2sIWHg_iL-6sJLb8ArePFDrXOWlJVbp8IDvudBasw/exec";
-      var designImgs = [];   // {name, mimeType, dataBase64, preview}
-      var measureImgs = [];
 
-      // CORS-safe call: POST with text/plain (no preflight), body = JSON string.
-      function api(payload) {
-        return fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        }).then(function (r) { return r.json(); });
+      function showLoader(){ document.getElementById('faceLoader').classList.remove('hide'); }
+      function hideLoader(){ document.getElementById('faceLoader').classList.add('hide'); }
+      function toast(m,t){ var el=document.getElementById('toast'); el.textContent=m; el.className='toast show '+(t||''); setTimeout(function(){ el.className='toast '+(t||''); },3200); }
+      function api(url,p){ return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json();}); }
+
+      /* ===== tabs ===== */
+      var securityLoaded=false;
+      function switchTab(which){
+        var s=which==='sales';
+        document.getElementById('salesPanel').classList.toggle('hidden',!s);
+        document.getElementById('securityPanel').classList.toggle('hidden',s);
+        document.getElementById('tabSales').classList.toggle('active',s);
+        document.getElementById('tabSecurity').classList.toggle('active',!s);
+        if(!s && !securityLoaded) loadSecurityOptions();
       }
 
-      // ---------- multi-select widget ----------
-      function MultiSelect(mountId, placeholder, single) {
-        var mount = document.getElementById(mountId);
-        var selected = [], options = [];
-        mount.className = 'ms';
-        var control = document.createElement('div'); control.className = 'ms-control';
-        var panel = document.createElement('div'); panel.className = 'ms-panel';
+      /* ===== multi-select ===== */
+      function MultiSelect(mountId, placeholder, single){
+        var mount=document.getElementById(mountId), selected=[], options=[];
+        mount.className='ms';
+        var control=document.createElement('div'); control.className='ms-control';
+        var panel=document.createElement('div'); panel.className='ms-panel';
         mount.appendChild(control); mount.appendChild(panel);
-
-        function renderControl() {
-          control.innerHTML = '';
-          if (!selected.length) {
-            var ph = document.createElement('span'); ph.className = 'ms-ph'; ph.textContent = placeholder; control.appendChild(ph);
-          } else selected.forEach(function (v) {
-            var c = document.createElement('span'); c.className = 'ms-chip';
-            c.appendChild(document.createTextNode(v));
-            var x = document.createElement('b'); x.textContent = '\u00d7';
-            x.onclick = function (e) { e.stopPropagation(); toggle(v, false); };
-            c.appendChild(x); control.appendChild(c);
-          });
-        }
-        function renderPanel() {
-          panel.innerHTML = '';
-          if (!options.length) { var e = document.createElement('div'); e.className = 'ms-empty'; e.textContent = 'No options — fill the Order Suggestions sheet.'; panel.appendChild(e); return; }
-          options.forEach(function (v) {
-            var row = document.createElement('label'); row.className = 'ms-opt';
-            var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = selected.indexOf(v) >= 0;
-            cb.onchange = function () { toggle(v, cb.checked); };
-            row.appendChild(cb); row.appendChild(document.createTextNode(v)); panel.appendChild(row);
-          });
-        }
-        function toggle(v, on) {
-          if (single) {
-            selected = on ? [v] : [];
-            panel.classList.remove('open'); control.classList.remove('open');
-          } else {
-            var i = selected.indexOf(v);
-            if (on && i < 0) selected.push(v);
-            if (!on && i >= 0) selected.splice(i, 1);
-          }
-          renderControl(); renderPanel();
-        }
-        control.addEventListener('click', function () {
-          var open = !panel.classList.contains('open');
-          panel.classList.toggle('open', open); control.classList.toggle('open', open);
-          if (open) renderPanel();
-        });
-        document.addEventListener('click', function (e) {
-          if (!mount.contains(e.target)) { panel.classList.remove('open'); control.classList.remove('open'); }
-        });
+        function renderControl(){ control.innerHTML='';
+          if(!selected.length){ var ph=document.createElement('span'); ph.className='ms-ph'; ph.textContent=placeholder; control.appendChild(ph); }
+          else selected.forEach(function(v){ var c=document.createElement('span'); c.className='ms-chip'; c.appendChild(document.createTextNode(v)); var x=document.createElement('b'); x.textContent='\u00d7'; x.onclick=function(e){e.stopPropagation();toggle(v,false);}; c.appendChild(x); control.appendChild(c); }); }
+        function renderPanel(){ panel.innerHTML='';
+          if(!options.length){ var e=document.createElement('div'); e.className='ms-empty'; e.textContent='No options — fill the Order Suggestions sheet.'; panel.appendChild(e); return; }
+          options.forEach(function(v){ var row=document.createElement('label'); row.className='ms-opt'; var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=selected.indexOf(v)>=0; cb.onchange=function(){toggle(v,cb.checked);}; row.appendChild(cb); row.appendChild(document.createTextNode(v)); panel.appendChild(row); }); }
+        function toggle(v,on){ if(single){ selected=on?[v]:[]; panel.classList.remove('open'); control.classList.remove('open'); } else { var i=selected.indexOf(v); if(on&&i<0)selected.push(v); if(!on&&i>=0)selected.splice(i,1); } renderControl(); renderPanel(); }
+        control.addEventListener('click',function(){ var open=!panel.classList.contains('open'); panel.classList.toggle('open',open); control.classList.toggle('open',open); if(open)renderPanel(); });
+        document.addEventListener('click',function(e){ if(!mount.contains(e.target)){ panel.classList.remove('open'); control.classList.remove('open'); } });
         renderControl();
-        return {
-          setOptions: function (arr) { options = arr || []; renderPanel(); },
-          value: function () { return selected.slice(); },
-          clear: function () { selected = []; renderControl(); renderPanel(); }
-        };
+        return { setOptions:function(a){options=a||[];renderPanel();}, value:function(){return selected.slice();}, clear:function(){selected=[];renderControl();renderPanel();} };
       }
-      var msSalesPerson = MultiSelect('salesPerson', '— Select —', true);
-      var msSalesType = MultiSelect('salesType', '— Select (one or more) —');
-      var msAssignedMaster = MultiSelect('assignedMaster', '— Select (one or more) —');
+      var msSalesPerson=MultiSelect('s_salesPerson','— Select —',true);
+      var msSalesType=MultiSelect('s_salesType','— Select (one or more) —');
+      var msAssignedMaster=MultiSelect('s_assignedMaster','— Select (one or more) —');
 
-      // ---------- suggestions ----------
-      api({ action: 'suggestions' })
-        .then(function (s) {
-          if (!s || (!s.salesPerson && !s.systemName)) {
-            show('errBox', 'Server reachable but returned no suggestions — the deployed Apps Script may be an old version. Redeploy: Manage deployments → New version.');
-            return;
-          }
-          if (s.systemName) document.getElementById('title').textContent = s.systemName + ' — New Order';
-          msSalesPerson.setOptions(s.salesPerson);
-          msSalesType.setOptions(s.salesType);
-          msAssignedMaster.setOptions(s.assignedMaster);
+      /* ===== SALES: load suggestions ===== */
+      api(SALES_API,{action:'suggestions'})
+        .then(function(s){
+          if(!s){ return; }
+          msSalesPerson.setOptions(s.salesPerson); msSalesType.setOptions(s.salesType); msAssignedMaster.setOptions(s.assignedMaster);
+          hideLoader();
         })
-        .catch(function () {
-          show('errBox', 'Could not reach the server for suggestions. Check the deployment: Execute as "Me", Access "Anyone", and redeploy a New version.');
-        });
+        .catch(function(){ hideLoader(); document.getElementById('s_err').textContent='Could not load Sales options — check SALES_API deployment.'; });
 
-      function fillList(id, arr) {
-        var sel = document.getElementById(id); if (!sel) return;
-        sel.length = 1;
-        (arr || []).forEach(function (v) {
-          var o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o);
-        });
+      /* ===== SALES: images ===== */
+      var designImgs=[], measureImgs=[];
+      function wireUp(zoneId,inputId,store,thumbsId){ var z=document.getElementById(zoneId), inp=document.getElementById(inputId);
+        z.addEventListener('click',function(){inp.click();});
+        z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('drag');});
+        z.addEventListener('dragleave',function(){z.classList.remove('drag');});
+        z.addEventListener('drop',function(e){e.preventDefault();z.classList.remove('drag');handleFiles(e.dataTransfer.files,store,thumbsId);});
+        inp.addEventListener('change',function(){handleFiles(inp.files,store,thumbsId);inp.value='';}); }
+      function handleFiles(files,store,thumbsId){ Array.prototype.forEach.call(files,function(f){ if(!/^image\//.test(f.type))return; resizeImg(f,function(r){ store.push({name:f.name,mimeType:'image/jpeg',dataBase64:r.b,preview:r.u}); renderThumbs(store,thumbsId); }); }); }
+      function resizeImg(file,cb){ var rd=new FileReader(); rd.onload=function(e){ var img=new Image(); img.onload=function(){ var w=img.width,h=img.height; if(w>h&&w>MAX_DIM){h=Math.round(h*MAX_DIM/w);w=MAX_DIM;} else if(h>=w&&h>MAX_DIM){w=Math.round(w*MAX_DIM/h);h=MAX_DIM;} var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); var u=cv.toDataURL('image/jpeg',JPEG_Q); cb({u:u,b:u.split(',')[1]}); }; img.src=e.target.result; }; rd.readAsDataURL(file); }
+      function renderThumbs(store,thumbsId){ var c=document.getElementById(thumbsId); c.innerHTML=''; store.forEach(function(im,idx){ var d=document.createElement('div'); d.className='thumb'; var img=document.createElement('img'); img.src=im.preview; d.appendChild(img); var x=document.createElement('button'); x.className='x'; x.textContent='\u00d7'; x.onclick=function(){store.splice(idx,1);renderThumbs(store,thumbsId);}; d.appendChild(x); c.appendChild(d); }); }
+      wireUp('s_designZone','s_designInput',designImgs,'s_designThumbs');
+      wireUp('s_measureZone','s_measureInput',measureImgs,'s_measureThumbs');
+
+      function sv(id){ return document.getElementById(id).value.trim(); }
+      function submitSales(){
+        var err=document.getElementById('s_err'), ok=document.getElementById('s_ok'); err.textContent=''; ok.classList.remove('show');
+        if(!sv('s_clientName')){ err.textContent='Client Name is required.'; return; }
+        var payload={ date:sv('s_date'), clientName:sv('s_clientName'), contact:sv('s_contact'),
+          salesPerson:msSalesPerson.value().join(', '), salesType:msSalesType.value().join(', '), assignedMaster:msAssignedMaster.value().join(', '),
+          expectedDelivery:sv('s_expectedDelivery'), advance:sv('s_advance'), product:sv('s_product'), totalCost:sv('s_totalCost'),
+          autoRename:document.getElementById('s_autoRename').checked,
+          designImages:designImgs.map(strip), measurementImages:measureImgs.map(strip) };
+        var btn=document.getElementById('s_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
+        api(SALES_API,{action:'submit',payload:payload})
+          .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Order';
+            if(res.ok===false){ err.textContent=res.error||'Save failed.'; return; }
+            ok.innerHTML='Saved as <strong>'+res.orderId+'</strong>. '+(res.folderUrl?'<a href="'+res.folderUrl+'" target="_blank">Open image folder</a>':'(no images)'); ok.classList.add('show');
+            toast('Order saved: '+res.orderId,'ok'); resetSales(); })
+          .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Order'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
       }
+      function strip(im){ return {name:im.name,mimeType:im.mimeType,dataBase64:im.dataBase64}; }
+      function resetSales(){ ['s_date','s_expectedDelivery','s_clientName','s_contact','s_product','s_advance','s_totalCost'].forEach(function(id){document.getElementById(id).value='';}); msSalesPerson.clear();msSalesType.clear();msAssignedMaster.clear(); designImgs.length=0;measureImgs.length=0; renderThumbs(designImgs,'s_designThumbs');renderThumbs(measureImgs,'s_measureThumbs'); window.scrollTo(0,0); }
 
-
-      // ---------- image handling ----------
-      function wireUploader(zoneId, inputId, store, thumbsId) {
-        var zone = document.getElementById(zoneId), input = document.getElementById(inputId);
-        zone.addEventListener('click', function () { input.click(); });
-        zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('drag'); });
-        zone.addEventListener('dragleave', function () { zone.classList.remove('drag'); });
-        zone.addEventListener('drop', function (e) { e.preventDefault(); zone.classList.remove('drag'); handleFiles(e.dataTransfer.files, store, thumbsId); });
-        input.addEventListener('change', function () { handleFiles(input.files, store, thumbsId); input.value = ''; });
+      /* ===== SECURITY ===== */
+      function fillSel(id,arr,ph){ var sel=document.getElementById(id); sel.innerHTML=''; var p=document.createElement('option'); p.value=''; p.textContent=ph||'— Select —'; sel.appendChild(p); (arr||[]).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}); }
+      function loadSecurityOptions(){
+        if(SECURITY_API.indexOf('PASTE_')===0){ document.getElementById('g_err').textContent='Set SECURITY_API URL in the file first.'; return; }
+        securityLoaded=true; setFollowup(); showLoader();
+        api(SECURITY_API,{action:'formOptions'})
+          .then(function(o){ hideLoader(); fillSel('g_source',o.sources,'Select source'); fillSel('g_itemType',o.items,'Select category'); fillSel('g_branch',o.branches,'Select branch'); fillSel('g_staffEmail',o.staff,'Select salesman'); })
+          .catch(function(){ hideLoader(); securityLoaded=false; document.getElementById('g_err').textContent='Could not load Security options — check SECURITY_API deployment.'; });
       }
-
-      function handleFiles(files, store, thumbsId) {
-        Array.prototype.forEach.call(files, function (file) {
-          if (!/^image\//.test(file.type)) return;
-          resizeToBase64(file, function (res) {
-            store.push({ name: file.name, mimeType: 'image/jpeg', dataBase64: res.base64, preview: res.dataUrl });
-            renderThumbs(store, thumbsId);
-          });
-        });
+      function setFollowup(){ var d=new Date(); d.setDate(d.getDate()+3); document.getElementById('g_followup').value=d.toISOString().slice(0,10); }
+      function submitGuard(){
+        var err=document.getElementById('g_err'); err.textContent='';
+        var name=sv('g_name'), mobile=document.getElementById('g_mobile').value.replace(/\D/g,'');
+        if(!name){ err.textContent='Enter the customer name.'; return; }
+        if(!/^\d{10}$/.test(mobile)){ err.textContent='Mobile must be exactly 10 digits.'; return; }
+        var payload={ name:name, mobile:mobile, source:sv('g_source'), itemType:sv('g_itemType'), branch:sv('g_branch'), staffEmail:sv('g_staffEmail') };
+        var btn=document.getElementById('g_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
+        api(SECURITY_API,{action:'saveVisitor',payload:payload})
+          .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor';
+            if(res.ok===false){ err.textContent=res.error||'Save failed.'; return; }
+            toast('Saved! Visitor #'+res.id,'ok'); resetGuard(); })
+          .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
       }
-
-      function resizeToBase64(file, cb) {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          var img = new Image();
-          img.onload = function () {
-            var w = img.width, h = img.height;
-            if (w > h && w > MAX_DIM) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
-            else if (h >= w && h > MAX_DIM) { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
-            var canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
-            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-            var dataUrl = canvas.toDataURL('image/jpeg', JPEG_Q);
-            cb({ dataUrl: dataUrl, base64: dataUrl.split(',')[1] });
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      function renderThumbs(store, thumbsId) {
-        var c = document.getElementById(thumbsId); c.innerHTML = '';
-        store.forEach(function (im, idx) {
-          var d = document.createElement('div'); d.className = 'thumb';
-          var img = document.createElement('img'); img.src = im.preview; d.appendChild(img);
-          var x = document.createElement('button'); x.className = 'x'; x.textContent = '\u00d7';
-          x.onclick = function () { store.splice(idx, 1); renderThumbs(store, thumbsId); };
-          d.appendChild(x); c.appendChild(d);
-        });
-      }
-
-      wireUploader('designZone', 'designInput', designImgs, 'designThumbs');
-      wireUploader('measureZone', 'measureInput', measureImgs, 'measureThumbs');
-
-      // ---------- submit ----------
-      function show(id, html) { var b = document.getElementById(id); b.innerHTML = html; b.classList.add('show'); }
-      function hideMsgs() { document.getElementById('errBox').classList.remove('show'); document.getElementById('okBox').classList.remove('show'); }
-      function val(id) { return document.getElementById(id).value.trim(); }
-
-      function onSubmit() {
-        hideMsgs();
-        if (!val('clientName')) { show('errBox', 'Client Name is required.'); return; }
-
-        var payload = {
-          date: val('date'), clientName: val('clientName'), contact: val('contact'),
-          salesPerson: msSalesPerson.value().join(', '),
-          salesType: msSalesType.value().join(', '),
-          assignedMaster: msAssignedMaster.value().join(', '),
-          expectedDelivery: val('expectedDelivery'), advance: val('advance'),
-          product: val('product'), totalCost: val('totalCost'),
-          autoRename: document.getElementById('autoRename').checked,
-          designImages: designImgs.map(strip), measurementImages: measureImgs.map(strip)
-        };
-
-        var btn = document.getElementById('submitBtn');
-        var overlay = document.getElementById('overlay');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="btn-spin"></span>Saving…';
-        overlay.classList.add('show');
-        var total = payload.designImages.length + payload.measurementImages.length;
-        document.getElementById('loaderText').textContent =
-          total ? ('Saving order & uploading ' + total + ' image' + (total > 1 ? 's' : '') + '…') : 'Saving order…';
-
-        api({ action: 'submit', payload: payload })
-          .then(function (res) {
-            btn.disabled = false; btn.textContent = 'Save Order';
-            overlay.classList.remove('show');
-            if (res.ok === false) { show('errBox', res.error || 'Save failed.'); return; }
-            show('okBox', 'Saved as <strong>' + res.orderId + '</strong>. ' +
-              (res.folderUrl ? '<a href="' + res.folderUrl + '" target="_blank">Open image folder</a>' : '(no images)'));
-            resetForm();
-          })
-          .catch(function (err) {
-            btn.disabled = false; btn.textContent = 'Save Order';
-            overlay.classList.remove('show');
-            show('errBox', (err && err.message) || 'Failed to reach the server. Check the deployment access (must be "Anyone").');
-          });
-      }
-
-      function strip(im) { return { name: im.name, mimeType: im.mimeType, dataBase64: im.dataBase64 }; }
-
-      function resetForm() {
-        ['date','expectedDelivery','clientName','contact','product','advance','totalCost']
-          .forEach(function (id) { document.getElementById(id).value = ''; });
-        msSalesPerson.clear(); msSalesType.clear(); msAssignedMaster.clear();
-        designImgs.length = 0; measureImgs.length = 0;
-        renderThumbs(designImgs, 'designThumbs'); renderThumbs(measureImgs, 'measureThumbs');
-        window.scrollTo(0, 0);
-      }
+      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; ['g_source','g_itemType','g_branch','g_staffEmail'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); setFollowup(); document.getElementById('g_name').focus(); }
+      document.getElementById('g_mobile').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
     </script>
   </body>
 </html>
