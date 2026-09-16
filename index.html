@@ -4,7 +4,7 @@
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-    <title>Ikxari - Designer Fashion Store</title>
+    <title>Ikxari — Sales Employee</title>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       * { box-sizing: border-box; font-family: 'Jost', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -87,12 +87,6 @@
     <div class="toast" id="toast"></div>
 
     <div class="page">
-      <div class="tabs">
-        <button id="tabSales" class="active" onclick="switchTab('sales')">Sales Employee</button>
-        <button id="tabSecurity" onclick="switchTab('security')">Office Boy</button>
-      </div>
-
-      <!-- ============ SALES EMPLOYEE ============ -->
       <div id="salesPanel">
         <div class="card">
           <div class="cap">Order Details</div>
@@ -141,52 +135,11 @@
         <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
       </div>
 
-      <!-- ============ SECURITY ============ -->
-      <div id="securityPanel" class="hidden">
-        <div class="card">
-          <div class="cap">New Visitor</div>
-          <div class="sub">Office Boy logs every visitor in a few taps.</div>
-          <div class="stat" id="g_stat">Today — Visitors: … · Ordered: …</div>
-          <div class="grid2">
-            <div class="field"><label>Customer Name</label><input type="text" id="g_name" placeholder="Customer name" /></div>
-            <div class="field"><label>Mobile Number</label><input type="tel" id="g_mobile" inputmode="numeric" maxlength="10" placeholder="9876543210" /></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>How did you hear about us?</label><select id="g_source"></select></div>
-            <div class="field"><label>Sales Person (converted by)</label><select id="g_staffEmail"></select></div>
-          </div>
-          <div class="grid2">
-            <div class="field"><label>Product Purchased / Ordered</label>
-              <select id="g_purchased" onchange="toggleReason()"><option value="">— Select —</option><option>Yes</option><option>No</option></select>
-            </div>
-            <div class="field" id="g_reasonWrap" style="display:none"><label>If No — why not?</label>
-              <select id="g_notBuyReason" onchange="toggleOther()">
-                <option value="">— Select reason —</option>
-                <option>Price</option>
-                <option>Design</option>
-                <option>Size</option>
-                <option>Colour</option>
-                <option>Visit Later</option>
-                <option>Just Surfing</option>
-                <option>Other (Please Tell Us)</option>
-              </select>
-            </div>
-          </div>
-          <div class="field" id="g_otherWrap" style="display:none"><label>Please tell us the reason</label>
-            <input type="text" id="g_notBuyOther" placeholder="Type the reason" />
-          </div>
-          <div class="err" id="g_err"></div>
-          <button class="btn" id="g_submit" onclick="submitGuard()">Save Visitor</button>
-        </div>
-      </div>
-
       <div class="foot">Built by Somnath Karmakar</div>
     </div>
 
     <script>
-      /* ===== two backends ===== */
-      var SECURITY_API = "https://script.google.com/macros/s/AKfycbyHMYLiCRRW7S75aR1csdBdh9i1HR35mCeq725QjQCdzgFfXkTjpVEOScGos648WavA-w/exec";
-      var SALES_API    = "https://script.google.com/macros/s/AKfycbyHMYLiCRRW7S75aR1csdBdh9i1HR35mCeq725QjQCdzgFfXkTjpVEOScGos648WavA-w/exec";
+      var SALES_API = "https://script.google.com/macros/s/AKfycbwjUBxv6WuKaKWdztSao8jfcMYkW2yZAqW5EsdRWWIctflv2EqDokkXp9hfAiv3Lf4zBA/exec";
 
       var MAX_DIM = 1600, JPEG_Q = 0.85;
 
@@ -194,17 +147,6 @@
       function hideLoader(){ document.getElementById('faceLoader').classList.add('hide'); }
       function toast(m,t){ var el=document.getElementById('toast'); el.textContent=m; el.className='toast show '+(t||''); setTimeout(function(){ el.className='toast '+(t||''); },3200); }
       function api(url,p){ return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json();}); }
-
-      /* ===== tabs ===== */
-      var securityLoaded=false;
-      function switchTab(which){
-        var s=which==='sales';
-        document.getElementById('salesPanel').classList.toggle('hidden',!s);
-        document.getElementById('securityPanel').classList.toggle('hidden',s);
-        document.getElementById('tabSales').classList.toggle('active',s);
-        document.getElementById('tabSecurity').classList.toggle('active',!s);
-        if(!s && !securityLoaded) loadSecurityOptions();
-      }
 
       /* ===== multi-select ===== */
       function MultiSelect(mountId, placeholder, single){
@@ -270,40 +212,6 @@
       }
       function strip(im){ return {name:im.name,mimeType:im.mimeType,dataBase64:im.dataBase64}; }
       function resetSales(){ ['s_date','s_expectedDelivery','s_clientName','s_contact','s_product','s_advance','s_totalCost'].forEach(function(id){document.getElementById(id).value='';}); msSalesPerson.clear();msSalesType.clear();msAssignedMaster.clear(); designImgs.length=0;measureImgs.length=0; renderThumbs(designImgs,'s_designThumbs');renderThumbs(measureImgs,'s_measureThumbs'); window.scrollTo(0,0); }
-
-      /* ===== SECURITY ===== */
-      function fillSel(id,arr,ph){ var sel=document.getElementById(id); sel.innerHTML=''; var p=document.createElement('option'); p.value=''; p.textContent=ph||'— Select —'; sel.appendChild(p); (arr||[]).forEach(function(v){var o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);}); }
-      function fillDatalist(id,arr){ var dl=document.getElementById(id); dl.innerHTML=''; (arr||[]).forEach(function(v){var o=document.createElement('option');o.value=v;dl.appendChild(o);}); }
-      function loadSecurityOptions(){
-        if(SECURITY_API.indexOf('PASTE_')===0){ document.getElementById('g_err').textContent='Set SECURITY_API URL in the file first.'; return; }
-        securityLoaded=true; showLoader();
-        api(SECURITY_API,{action:'formOptions'})
-          .then(function(o){ hideLoader(); fillSel('g_source',o.sources,'Select source'); fillSel('g_staffEmail',o.staff,'Select salesman'); loadFootfall(); })
-          .catch(function(){ hideLoader(); securityLoaded=false; document.getElementById('g_err').textContent='Could not load Office Boy options — check SECURITY_API deployment.'; });
-      }
-      function loadFootfall(){
-        api(SECURITY_API,{action:'footfall'})
-          .then(function(f){ if(f&&f.today) updateStat(f.today.v,f.today.o); })
-          .catch(function(){});
-      }
-      function updateStat(v,o){ document.getElementById('g_stat').innerHTML='Today &mdash; Visitors: <b>'+(v||0)+'</b> &middot; Ordered: <b>'+(o||0)+'</b>'; }
-      function toggleReason(){ var no=document.getElementById('g_purchased').value==='No'; document.getElementById('g_reasonWrap').style.display=no?'block':'none'; if(!no){ document.getElementById('g_otherWrap').style.display='none'; } }
-      function toggleOther(){ document.getElementById('g_otherWrap').style.display=(document.getElementById('g_notBuyReason').value==='Other (Please Tell Us)')?'block':'none'; }
-      function submitGuard(){
-        var err=document.getElementById('g_err'); err.textContent='';
-        var name=sv('g_name'), mobile=document.getElementById('g_mobile').value.replace(/\D/g,'');
-        var reason=sv('g_notBuyReason');
-        if(reason==='Other (Please Tell Us)') reason=sv('g_notBuyOther')||'Other';
-        var payload={ name:name, mobile:mobile, source:sv('g_source'), staffEmail:sv('g_staffEmail'), purchased:sv('g_purchased'), notBuyReason:reason };
-        var btn=document.getElementById('g_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
-        api(SECURITY_API,{action:'saveVisitor',payload:payload})
-          .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor';
-            if(res.ok===false){ err.textContent=res.error||'Save failed.'; return; }
-            var d=res.res||{}; toast('Saved! Visitor #'+d.id,'ok'); updateStat(d.todayVisitors,d.todayOrdered); resetGuard(); })
-          .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Visitor'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
-      }
-      function resetGuard(){ document.getElementById('g_name').value=''; document.getElementById('g_mobile').value=''; document.getElementById('g_notBuyOther').value=''; ['g_source','g_staffEmail','g_purchased','g_notBuyReason'].forEach(function(id){document.getElementById(id).selectedIndex=0;}); toggleReason(); document.getElementById('g_name').focus(); }
-      document.getElementById('g_mobile').addEventListener('input',function(){ this.value=this.value.replace(/\D/g,'').slice(0,10); });
     </script>
   </body>
 </html>
