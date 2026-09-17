@@ -4,39 +4,25 @@
     <base target="_top">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-    <title>Ikxari — Sales Employee</title>
+    <title>Sales Entry</title>
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
       * { box-sizing: border-box; font-family: 'Jost', sans-serif; -webkit-tap-highlight-color: transparent; }
       html, body { margin: 0; padding: 0; background: #eef0f3; color: #1c1c1e; font-size: 14px; }
-      .page { width: 92vw; max-width: 920px; margin: 0 auto; padding: 18px 0 46px; }
-
-      .logo { display: flex; align-items: center; gap: 11px; justify-content: center; margin-bottom: 14px; }
+      .page { width: 92vw; max-width: 820px; margin: 0 auto; padding: 18px 0 46px; }
+      .logo { display: flex; align-items: center; gap: 11px; justify-content: center; margin-bottom: 16px; }
       .logo .dot { width: 42px; height: 42px; border-radius: 11px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; letter-spacing: 1px; }
       .logo h1 { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
       .logo .tag { font-size: 11.5px; color: #6b7075; margin-top: 1px; }
-
-      .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
-      .tabs button { padding: 10px 20px; border-radius: 30px; border: 1px solid #d5d8dd; background: #fff; color: #4b4f56; font-family: 'Jost'; font-size: 14px; font-weight: 600; cursor: pointer; transition: .15s; }
-      .tabs button.active { background: #000; color: #fff; border-color: #000; }
-
       .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 14px; padding: 18px 18px; box-shadow: 0 6px 22px rgba(0,0,0,.05); margin-bottom: 14px; }
       .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 7px 12px; border-radius: 7px; margin: 0 0 14px; }
-      .sub { font-size: 12.5px; color: #6b7075; text-align: center; margin: -8px 0 16px; }
-
       .field { margin-bottom: 14px; }
       .field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
-      input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select {
-        width: 100%; padding: 12px 13px; font-size: 16px; border: 1px solid #ccc; border-radius: 9px; background: #fff; color: #1c1c1e; outline: none; transition: .15s;
-      }
+      input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select { width: 100%; padding: 12px 13px; font-size: 16px; border: 1px solid #ccc; border-radius: 9px; background: #fff; color: #1c1c1e; outline: none; transition: .15s; }
       input:focus, textarea:focus, select:focus { border-color: #000; box-shadow: 0 0 0 3px rgba(0,0,0,.08); }
-      textarea { resize: vertical; min-height: 62px; }
-      input::placeholder, textarea::placeholder { color: #9aa0a6; }
-
+      textarea { resize: vertical; min-height: 62px; } input::placeholder, textarea::placeholder { color: #9aa0a6; }
       .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
       @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; gap: 0; } }
-
-      /* multi-select */
       .ms { position: relative; }
       .ms-control { min-height: 46px; border: 1px solid #ccc; border-radius: 9px; padding: 7px 9px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; cursor: pointer; background: #fff; }
       .ms-control.open { border-color: #000; }
@@ -46,11 +32,8 @@
       .ms-panel { position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 4px); background: #fff; border: 1px solid #ccc; border-radius: 9px; box-shadow: 0 8px 22px rgba(0,0,0,.14); max-height: 240px; overflow: auto; display: none; }
       .ms-panel.open { display: block; }
       .ms-opt { display: flex; align-items: center; gap: 9px; padding: 11px 12px; cursor: pointer; font-size: 15px; border-bottom: 1px solid #f0f1f3; }
-      .ms-opt:last-child { border-bottom: 0; } .ms-opt:hover { background: #f2f4f7; }
-      .ms-opt input { width: 17px; height: 17px; }
+      .ms-opt:last-child { border-bottom: 0; } .ms-opt:hover { background: #f2f4f7; } .ms-opt input { width: 17px; height: 17px; }
       .ms-empty { padding: 12px; color: #9aa0a6; font-size: 13px; }
-
-      /* image uploaders */
       .up-zone { border: 1.5px dashed #b9bdc6; border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; background: #fafbfc; }
       .up-zone:hover, .up-zone.drag { border-color: #000; background: #f2f4f7; }
       .up-zone .big { font-weight: 600; } .up-zone .small { color: #6b7075; font-size: 12px; margin-top: 3px; }
@@ -59,7 +42,6 @@
       .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
       .thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; border: none; cursor: pointer; font-size: 13px; line-height: 20px; padding: 0; }
       .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
-
       .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Jost'; font-size: 16px; font-weight: 700; color: #fff; background: #000; transition: .15s; margin-top: 6px; }
       .btn:active { transform: translateY(1px); } .btn:disabled { opacity: .55; cursor: wait; }
       .spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; margin-right: 8px; }
@@ -69,86 +51,76 @@
       .ok { background: #e6f4ea; border: 1px solid #b7e1cd; color: #137333; border-radius: 8px; padding: 10px; margin-top: 6px; display: none; word-break: break-word; }
       .ok.show { display: block; } .ok a { color: #0b6b2b; font-weight: 700; }
       .foot { text-align: center; color: #9aa0a6; font-size: 11px; margin-top: 8px; }
-
       .faceLoader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; background: rgba(238,240,243,.92); backdrop-filter: blur(3px); }
       .faceLoader.hide { display: none; }
       .loading-text { font-size: 34px; font-weight: 800; letter-spacing: 6px; text-transform: uppercase; background: linear-gradient(90deg,#cfd2d8 0%,#111 50%,#cfd2d8 100%); background-size: 200% auto; color: transparent; -webkit-background-clip: text; background-clip: text; animation: shimmer 1.7s linear infinite; }
       @keyframes shimmer { to { background-position: 200% center; } }
       .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 13px 20px; border-radius: 11px; font-size: 13.5px; z-index: 10001; opacity: 0; transition: .3s; box-shadow: 0 12px 30px rgba(0,0,0,.25); max-width: 90vw; text-align: center; }
-      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-      .toast.ok { background: #137333; } .toast.err { background: #b00020; }
-      .hidden { display: none; }
-      .stat { background: #111; color: #fff; border-radius: 9px; padding: 10px 12px; font-size: 13px; text-align: center; margin-bottom: 14px; font-weight: 600; }
-      .stat b { color: #7fe0a6; }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } .toast.ok { background: #137333; } .toast.err { background: #b00020; }
     </style>
   </head>
   <body>
-    <div class="faceLoader" id="faceLoader"><div class="loading-text">IKXARI</div></div>
+    <div class="faceLoader" id="faceLoader"><div class="loading-text">LOADING</div></div>
     <div class="toast" id="toast"></div>
-
     <div class="page">
-      <div id="salesPanel">
-        <div class="card">
-          <div class="cap">Order Details</div>
-          <div class="grid2">
-            <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
-            <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
-          </div>
-          <div class="field"><label>Client Name</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
-          <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
-          <div class="grid2">
-            <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
-            <div class="field"><label>Sales Type</label><div id="s_salesType"></div></div>
-          </div>
-          <div class="field"><label>Assigned Master</label><div id="s_assignedMaster"></div></div>
-        </div>
 
-        <div class="card">
-          <div class="cap">Product &amp; Payment</div>
-          <div class="field"><label>Product Ordered / Given</label><textarea id="s_product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
-          <div class="grid2">
-            <div class="field"><label>Advance Payment</label><input type="number" id="s_advance" step="0.01" placeholder="700" /></div>
-            <div class="field"><label>Total Cost</label><input type="number" id="s_totalCost" step="0.01" placeholder="2500" /></div>
-          </div>
+      <div class="card">
+        <div class="cap">Order Details</div>
+        <div class="grid2">
+          <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
+          <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
         </div>
-
-        <div class="card">
-          <div class="cap">Images</div>
-          <div class="field">
-            <label>Design Images (multiple)</label>
-            <div class="up-zone" id="s_designZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
-            <input type="file" id="s_designInput" accept="image/*" multiple style="display:none" />
-            <div class="thumbs" id="s_designThumbs"></div>
-          </div>
-          <div class="field">
-            <label>Measurement (multiple)</label>
-            <div class="up-zone" id="s_measureZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
-            <input type="file" id="s_measureInput" accept="image/*" multiple style="display:none" />
-            <div class="thumbs" id="s_measureThumbs"></div>
-          </div>
-          <label class="toggle"><input type="checkbox" id="s_autoRename" checked /> Auto-rename images</label>
-          <div class="hint">Images stored in a Drive folder per order; the sheet gets the folder link.</div>
+        <div class="field"><label>Client Name</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
+        <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
+        <div class="grid2">
+          <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
+          <div class="field"><label>Sales Type</label><div id="s_salesType"></div></div>
         </div>
-
-        <div class="err" id="s_err"></div>
-        <div class="ok" id="s_ok"></div>
-        <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
+        <div class="field"><label>Assigned Master</label><div id="s_assignedMaster"></div></div>
       </div>
 
+      <div class="card">
+        <div class="cap">Product &amp; Payment</div>
+        <div class="field"><label>Product Ordered / Given</label><textarea id="s_product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
+        <div class="grid2">
+          <div class="field"><label>Advance Payment</label><input type="number" id="s_advance" step="0.01" placeholder="700" /></div>
+          <div class="field"><label>Total Cost</label><input type="number" id="s_totalCost" step="0.01" placeholder="2500" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cap">Images</div>
+        <div class="field">
+          <label>Design Images (multiple)</label>
+          <div class="up-zone" id="s_designZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+          <input type="file" id="s_designInput" accept="image/*" multiple style="display:none" />
+          <div class="thumbs" id="s_designThumbs"></div>
+        </div>
+        <div class="field">
+          <label>Measurement (multiple)</label>
+          <div class="up-zone" id="s_measureZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+          <input type="file" id="s_measureInput" accept="image/*" multiple style="display:none" />
+          <div class="thumbs" id="s_measureThumbs"></div>
+        </div>
+        <label class="toggle"><input type="checkbox" id="s_autoRename" checked /> Auto-rename images</label>
+        <div class="hint">Images stored in a Drive folder per order; the sheet gets the folder link.</div>
+      </div>
+
+      <div class="err" id="s_err"></div>
+      <div class="ok" id="s_ok"></div>
+      <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
       <div class="foot">Built by Somnath Karmakar</div>
     </div>
 
     <script>
-      var SALES_API = "https://script.google.com/macros/s/AKfycbwjUBxv6WuKaKWdztSao8jfcMYkW2yZAqW5EsdRWWIctflv2EqDokkXp9hfAiv3Lf4zBA/exec";
-
+      var API_URL = "https://script.google.com/macros/s/AKfycbzs2Qvvl7sKzQd3i68v708j1Red0TSPyo4xdil-G5kzoU77sl3JZP0oiugLfNydXOI3mg/exec";
       var MAX_DIM = 1600, JPEG_Q = 0.85;
-
       function showLoader(){ document.getElementById('faceLoader').classList.remove('hide'); }
       function hideLoader(){ document.getElementById('faceLoader').classList.add('hide'); }
       function toast(m,t){ var el=document.getElementById('toast'); el.textContent=m; el.className='toast show '+(t||''); setTimeout(function(){ el.className='toast '+(t||''); },3200); }
-      function api(url,p){ return fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json();}); }
+      function api(p){ return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}).then(function(r){return r.json();}); }
+      function sv(id){ return document.getElementById(id).value.trim(); }
 
-      /* ===== multi-select ===== */
       function MultiSelect(mountId, placeholder, single){
         var mount=document.getElementById(mountId), selected=[], options=[];
         mount.className='ms';
@@ -171,16 +143,10 @@
       var msSalesType=MultiSelect('s_salesType','— Select (one or more) —');
       var msAssignedMaster=MultiSelect('s_assignedMaster','— Select (one or more) —');
 
-      /* ===== SALES: load suggestions ===== */
-      api(SALES_API,{action:'suggestions'})
-        .then(function(s){
-          if(!s){ return; }
-          msSalesPerson.setOptions(s.salesPerson); msSalesType.setOptions(s.salesType); msAssignedMaster.setOptions(s.assignedMaster);
-          hideLoader();
-        })
-        .catch(function(){ hideLoader(); document.getElementById('s_err').textContent='Could not load Sales options — check SALES_API deployment.'; });
+      api({action:'suggestions'})
+        .then(function(s){ if(!s){return;} msSalesPerson.setOptions(s.salesPerson); msSalesType.setOptions(s.salesType); msAssignedMaster.setOptions(s.assignedMaster); hideLoader(); })
+        .catch(function(){ hideLoader(); document.getElementById('s_err').textContent='Could not load options — check the backend deployment (Access: Anyone).'; });
 
-      /* ===== SALES: images ===== */
       var designImgs=[], measureImgs=[];
       function wireUp(zoneId,inputId,store,thumbsId){ var z=document.getElementById(zoneId), inp=document.getElementById(inputId);
         z.addEventListener('click',function(){inp.click();});
@@ -193,24 +159,22 @@
       function renderThumbs(store,thumbsId){ var c=document.getElementById(thumbsId); c.innerHTML=''; store.forEach(function(im,idx){ var d=document.createElement('div'); d.className='thumb'; var img=document.createElement('img'); img.src=im.preview; d.appendChild(img); var x=document.createElement('button'); x.className='x'; x.textContent='\u00d7'; x.onclick=function(){store.splice(idx,1);renderThumbs(store,thumbsId);}; d.appendChild(x); c.appendChild(d); }); }
       wireUp('s_designZone','s_designInput',designImgs,'s_designThumbs');
       wireUp('s_measureZone','s_measureInput',measureImgs,'s_measureThumbs');
+      function strip(im){ return {name:im.name,mimeType:im.mimeType,dataBase64:im.dataBase64}; }
 
-      function sv(id){ return document.getElementById(id).value.trim(); }
       function submitSales(){
         var err=document.getElementById('s_err'), ok=document.getElementById('s_ok'); err.textContent=''; ok.classList.remove('show');
         var payload={ date:sv('s_date'), clientName:sv('s_clientName'), contact:sv('s_contact'),
           salesPerson:msSalesPerson.value().join(', '), salesType:msSalesType.value().join(', '), assignedMaster:msAssignedMaster.value().join(', '),
           expectedDelivery:sv('s_expectedDelivery'), advance:sv('s_advance'), product:sv('s_product'), totalCost:sv('s_totalCost'),
-          autoRename:document.getElementById('s_autoRename').checked,
-          designImages:designImgs.map(strip), measurementImages:measureImgs.map(strip) };
+          autoRename:document.getElementById('s_autoRename').checked, designImages:designImgs.map(strip), measurementImages:measureImgs.map(strip) };
         var btn=document.getElementById('s_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
-        api(SALES_API,{action:'submit',payload:payload})
+        api({action:'submit',payload:payload})
           .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Order';
             if(res.ok===false){ err.textContent=res.error||'Save failed.'; return; }
             ok.innerHTML='Saved as <strong>'+res.orderId+'</strong>. '+(res.folderUrl?'<a href="'+res.folderUrl+'" target="_blank">Open image folder</a>':'(no images)'); ok.classList.add('show');
             toast('Order saved: '+res.orderId,'ok'); resetSales(); })
           .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Order'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
       }
-      function strip(im){ return {name:im.name,mimeType:im.mimeType,dataBase64:im.dataBase64}; }
       function resetSales(){ ['s_date','s_expectedDelivery','s_clientName','s_contact','s_product','s_advance','s_totalCost'].forEach(function(id){document.getElementById(id).value='';}); msSalesPerson.clear();msSalesType.clear();msAssignedMaster.clear(); designImgs.length=0;measureImgs.length=0; renderThumbs(designImgs,'s_designThumbs');renderThumbs(measureImgs,'s_measureThumbs'); window.scrollTo(0,0); }
     </script>
   </body>
