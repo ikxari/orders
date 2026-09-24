@@ -15,7 +15,8 @@
       .logo h1 { font-size: 20px; font-weight: 800; letter-spacing: 2px; }
       .logo .tag { font-size: 11.5px; color: #6b7075; margin-top: 1px; }
       .card { background: #fff; border: 1px solid #e2e4e8; border-radius: 14px; padding: 18px 18px; box-shadow: 0 6px 22px rgba(0,0,0,.05); margin-bottom: 14px; }
-      .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 7px 12px; border-radius: 7px; margin: 0 0 14px; }
+      .cap { background: #000; color: #fff; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; text-align: center; font-size: 12px; padding: 7px 12px; border-radius: 7px; margin: 0 0 14px; display: flex; justify-content: space-between; align-items: center;}
+      .cap span.edit-badge { background: #d97706; padding: 2px 8px; border-radius: 4px; font-size: 10px; display: none; }
       .field { margin-bottom: 14px; }
       .field label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 6px; }
       input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select { width: 100%; padding: 12px 13px; font-size: 16px; border: 1px solid #ccc; border-radius: 9px; background: #fff; color: #1c1c1e; outline: none; transition: .15s; }
@@ -42,8 +43,13 @@
       .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
       .thumb .x { position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; border-radius: 50%; background: rgba(0,0,0,.65); color: #fff; border: none; cursor: pointer; font-size: 13px; line-height: 20px; padding: 0; }
       .toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
+      
       .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; cursor: pointer; font-family: 'Jost'; font-size: 16px; font-weight: 700; color: #fff; background: #000; transition: .15s; margin-top: 6px; }
       .btn:active { transform: translateY(1px); } .btn:disabled { opacity: .55; cursor: wait; }
+      
+      .btn-cancel { background: #f2f4f7; color: #000; margin-top: 8px; display: none; }
+      .btn-cancel.show { display: block; }
+      
       .spin { display: inline-block; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,.45); border-top-color: #fff; border-radius: 50%; animation: sp .7s linear infinite; vertical-align: -2px; margin-right: 8px; }
       @keyframes sp { to { transform: rotate(360deg); } }
       .hint { color: #6b7075; font-size: 12px; margin-top: 4px; }
@@ -57,64 +63,107 @@
       @keyframes shimmer { to { background-position: 200% center; } }
       .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px); background: #111; color: #fff; padding: 13px 20px; border-radius: 11px; font-size: 13.5px; z-index: 10001; opacity: 0; transition: .3s; box-shadow: 0 12px 30px rgba(0,0,0,.25); max-width: 90vw; text-align: center; }
       .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); } .toast.ok { background: #137333; } .toast.err { background: #b00020; }
+      
+      /* RECENT LIST STYLES */
+      .recent-list { margin-top: 10px; }
+      .rl-item { background: #fafbfc; border: 1px solid #e2e4e8; border-radius: 8px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;}
+      .rl-meta { font-size: 12px; color: #6b7075; margin-bottom: 2px;}
+      .rl-title { font-size: 15px; font-weight: 700; color: #000; }
+      .rl-btn { background: #eef0f3; border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; color: #374151; transition: .2s; }
+      .rl-btn:hover { background: #000; color: #fff; border-color: #000; }
+      .hide-images-on-edit { transition: 0.3s; }
+      .hide-images-on-edit.hidden { opacity: 0.4; pointer-events: none; }
     </style>
   </head>
   <body>
     <div class="faceLoader" id="faceLoader"><div class="loading-text">LOADING</div></div>
     <div class="toast" id="toast"></div>
     <div class="page">
-
-      <div class="card">
-        <div class="cap">Order Details</div>
-        <div class="grid2">
-          <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
-          <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
-        </div>
-        <div class="field"><label>Client Name</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
-        <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
-        <div class="grid2">
-          <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
-          <div class="field"><label>Sales Type</label><div id="s_salesType"></div></div>
-        </div>
-        <div class="field"><label>Assigned Master / Karigar / Dyer</label><div id="s_assignedMaster"></div></div>
-      </div>
-
-      <div class="card">
-        <div class="cap">Product &amp; Payment</div>
-        <div class="field"><label>Product Ordered / Given</label><textarea id="s_product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
-        <div class="grid2">
-          <div class="field"><label>Advance Payment</label><input type="number" id="s_advance" step="0.01" placeholder="700" /></div>
-          <div class="field"><label>Total Cost</label><input type="number" id="s_totalCost" step="0.01" placeholder="2500" /></div>
+      
+      <div class="logo">
+        <div class="dot">IK</div>
+        <div>
+          <h1>IKXARI SALES</h1>
+          <div class="tag">CRM Order Entry System</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="cap">Images</div>
-        <div class="field">
-          <label>Design Images (multiple)</label>
-          <div class="up-zone" id="s_designZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
-          <input type="file" id="s_designInput" accept="image/*" multiple style="display:none" />
-          <div class="thumbs" id="s_designThumbs"></div>
+      <!-- ENTRY / EDIT FORM -->
+      <div id="formContainer">
+        <div class="card">
+          <div class="cap">
+            <span>Order Details</span>
+            <span class="edit-badge" id="editBadge">EDITING: </span>
+          </div>
+          <input type="hidden" id="s_editId" value="" />
+          <div class="grid2">
+            <div class="field"><label>Date</label><input type="date" id="s_date" /></div>
+            <div class="field"><label>Expected Delivery Date</label><input type="date" id="s_expectedDelivery" /></div>
+          </div>
+          <div class="field"><label>Client Name</label><input type="text" id="s_clientName" placeholder="e.g. Aditi" /></div>
+          <div class="field"><label>Contact Details</label><input type="tel" id="s_contact" inputmode="numeric" placeholder="9876543210" /></div>
+          <div class="grid2">
+            <div class="field"><label>Sales Person</label><div id="s_salesPerson"></div></div>
+            <div class="field"><label>Sales Type</label><div id="s_salesType"></div></div>
+          </div>
+          <div class="field"><label>Assigned Master</label><div id="s_assignedMaster"></div></div>
         </div>
-        <div class="field">
-          <label>Measurement (multiple)</label>
-          <div class="up-zone" id="s_measureZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
-          <input type="file" id="s_measureInput" accept="image/*" multiple style="display:none" />
-          <div class="thumbs" id="s_measureThumbs"></div>
+
+        <div class="card">
+          <div class="cap">Product &amp; Payment</div>
+          <div class="field"><label>Product Ordered / Given</label><textarea id="s_product" placeholder="e.g. Customization — 2 pcs"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Advance Payment</label><input type="number" id="s_advance" step="0.01" placeholder="700" /></div>
+            <div class="field"><label>Total Cost</label><input type="number" id="s_totalCost" step="0.01" placeholder="2500" /></div>
+          </div>
         </div>
-        <label class="toggle"><input type="checkbox" id="s_autoRename" checked /> Auto-rename images</label>
-        <div class="hint">Images stored in a Drive folder per order; the sheet gets the folder link.</div>
+
+        <div class="card hide-images-on-edit" id="imgCard">
+          <div class="cap">Images</div>
+          <div class="field">
+            <label>Design Images (multiple)</label>
+            <div class="up-zone" id="s_designZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+            <input type="file" id="s_designInput" accept="image/*" multiple style="display:none" />
+            <div class="thumbs" id="s_designThumbs"></div>
+          </div>
+          <div class="field">
+            <label>Measurement (multiple)</label>
+            <div class="up-zone" id="s_measureZone"><div class="big">Tap to add images</div><div class="small">or drag &amp; drop</div></div>
+            <input type="file" id="s_measureInput" accept="image/*" multiple style="display:none" />
+            <div class="thumbs" id="s_measureThumbs"></div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="s_autoRename" checked /> Auto-rename images</label>
+          <div class="hint" id="imgHint">Images stored in a Drive folder per order; the sheet gets the folder link.</div>
+        </div>
+
+        <div class="err" id="s_err"></div>
+        <div class="ok" id="s_ok"></div>
+        
+        <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
+        <button class="btn btn-cancel" id="s_cancel" onclick="cancelEdit()">Cancel Edit</button>
       </div>
 
-      <div class="err" id="s_err"></div>
-      <div class="ok" id="s_ok"></div>
-      <button class="btn" id="s_submit" onclick="submitSales()">Save Order</button>
+      <!-- RECENT LIST -->
+      <div class="card" id="listContainer">
+        <div class="cap" style="justify-content:space-between">
+          <span>Recent Orders</span>
+          <button style="background:transparent;border:none;color:#fff;cursor:pointer;font-family:'Jost';" onclick="loadRecentOrders()">↻ Refresh</button>
+        </div>
+        <div class="recent-list" id="recentList">
+           <div style="text-align:center;color:#9aa0a6;padding:10px;">Loading recent orders...</div>
+        </div>
+      </div>
+
       <div class="foot">Built by Somnath Karmakar</div>
     </div>
 
     <script>
-      var API_URL = "https://script.google.com/macros/s/AKfycbxeB0P2ZAzirYLXRhFa4WqwmRppei71jts0TYz1DRfSVIsJi3z0V4yXKpa6WZH5acCj1g/exec";
+      // MAKE SURE TO UPDATE THIS URL WITH YOUR NEW DEPLOYMENT URL
+      var API_URL = "https://script.google.com/macros/s/AKfycbxYp40yJD9HqVpKTMK3hIAGypLEMbIO8Clb9B5EOgZIbltocPokxMdHVTn6R8fZL_Zd0A/exec";
       var MAX_DIM = 1600, JPEG_Q = 0.85;
+      
+      var globalRecentData = []; // To hold loaded orders for easy edit mapping
+
       function showLoader(){ document.getElementById('faceLoader').classList.remove('hide'); }
       function hideLoader(){ document.getElementById('faceLoader').classList.add('hide'); }
       function toast(m,t){ var el=document.getElementById('toast'); el.textContent=m; el.className='toast show '+(t||''); setTimeout(function(){ el.className='toast '+(t||''); },3200); }
@@ -137,16 +186,29 @@
         control.addEventListener('click',function(){ var open=!panel.classList.contains('open'); panel.classList.toggle('open',open); control.classList.toggle('open',open); if(open)renderPanel(); });
         document.addEventListener('click',function(e){ if(!mount.contains(e.target)){ panel.classList.remove('open'); control.classList.remove('open'); } });
         renderControl();
-        return { setOptions:function(a){options=a||[];renderPanel();}, value:function(){return selected.slice();}, clear:function(){selected=[];renderControl();renderPanel();} };
+        return { 
+           setOptions:function(a){options=a||[];renderPanel();}, 
+           value:function(){return selected.slice();}, 
+           clear:function(){selected=[];renderControl();renderPanel();},
+           setValue:function(arr){ selected = arr.filter(Boolean); renderControl(); renderPanel(); } // For Edit population
+        };
       }
       var msSalesPerson=MultiSelect('s_salesPerson','— Select —',true);
       var msSalesType=MultiSelect('s_salesType','— Select (one or more) —');
       var msAssignedMaster=MultiSelect('s_assignedMaster','— Select (one or more) —');
 
+      // Boot sequence: load dropdowns, then load recent orders
       api({action:'suggestions'})
-        .then(function(s){ if(!s){return;} msSalesPerson.setOptions(s.salesPerson); msSalesType.setOptions(s.salesType); msAssignedMaster.setOptions(s.assignedMaster); hideLoader(); })
-        .catch(function(){ hideLoader(); document.getElementById('s_err').textContent='Could not load options — check the backend deployment (Access: Anyone).'; });
+        .then(function(s){ 
+           if(s) { msSalesPerson.setOptions(s.salesPerson); msSalesType.setOptions(s.salesType); msAssignedMaster.setOptions(s.assignedMaster); }
+           loadRecentOrders(); 
+        })
+        .catch(function(){ 
+           document.getElementById('s_err').textContent='Could not load options. Check backend.'; 
+           hideLoader(); 
+        });
 
+      // ------------------------------------------------------------- IMAGES
       var designImgs=[], measureImgs=[];
       function wireUp(zoneId,inputId,store,thumbsId){ var z=document.getElementById(zoneId), inp=document.getElementById(inputId);
         z.addEventListener('click',function(){inp.click();});
@@ -161,21 +223,130 @@
       wireUp('s_measureZone','s_measureInput',measureImgs,'s_measureThumbs');
       function strip(im){ return {name:im.name,mimeType:im.mimeType,dataBase64:im.dataBase64}; }
 
+      // ------------------------------------------------------------- SUBMIT (CREATE OR UPDATE)
       function submitSales(){
+        var editId = sv('s_editId');
+        var isEdit = (editId !== "");
         var err=document.getElementById('s_err'), ok=document.getElementById('s_ok'); err.textContent=''; ok.classList.remove('show');
+        
         var payload={ date:sv('s_date'), clientName:sv('s_clientName'), contact:sv('s_contact'),
           salesPerson:msSalesPerson.value().join(', '), salesType:msSalesType.value().join(', '), assignedMaster:msAssignedMaster.value().join(', '),
-          expectedDelivery:sv('s_expectedDelivery'), advance:sv('s_advance'), product:sv('s_product'), totalCost:sv('s_totalCost'),
-          autoRename:document.getElementById('s_autoRename').checked, designImages:designImgs.map(strip), measurementImages:measureImgs.map(strip) };
+          expectedDelivery:sv('s_expectedDelivery'), advance:sv('s_advance'), product:sv('s_product'), totalCost:sv('s_totalCost')};
+        
+        var action = 'submit';
+        
+        if (isEdit) {
+           action = 'updateOrder';
+           payload.orderId = editId;
+           // Images are NOT passed during edit (simplifies drive management)
+        } else {
+           payload.autoRename = document.getElementById('s_autoRename').checked;
+           payload.designImages = designImgs.map(strip);
+           payload.measurementImages = measureImgs.map(strip);
+        }
+
         var btn=document.getElementById('s_submit'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…'; showLoader();
-        api({action:'submit',payload:payload})
-          .then(function(res){ hideLoader(); btn.disabled=false; btn.textContent='Save Order';
-            if(res.ok===false){ err.textContent=res.error||'Save failed.'; return; }
-            ok.innerHTML='Saved as <strong>'+res.orderId+'</strong>. '+(res.folderUrl?'<a href="'+res.folderUrl+'" target="_blank">Open image folder</a>':'(no images)'); ok.classList.add('show');
-            toast('Order saved: '+res.orderId,'ok'); resetSales(); })
-          .catch(function(e){ hideLoader(); btn.disabled=false; btn.textContent='Save Order'; err.textContent=(e&&e.message)||'Failed to reach server.'; });
+        api({action:action, payload:payload})
+          .then(function(res){ 
+             hideLoader(); 
+             
+             if(res.ok===false){ 
+                 err.textContent=res.error||'Save failed.'; 
+                 btn.disabled=false; 
+                 btn.textContent= isEdit ? 'Update Order' : 'Save Order';
+                 return; 
+             }
+             
+             if (isEdit) {
+                 toast('Order ' + res.orderId + ' updated successfully', 'ok');
+                 cancelEdit(); // resets form back to create mode
+             } else {
+                 ok.innerHTML='Saved as <strong>'+res.orderId+'</strong>. '+(res.folderUrl?'<a href="'+res.folderUrl+'" target="_blank">Open image folder</a>':'(no images)'); ok.classList.add('show');
+                 toast('Order saved: '+res.orderId,'ok'); 
+                 resetSales();
+                 btn.disabled=false; 
+                 btn.textContent='Save Order';
+             }
+             loadRecentOrders(); // Refresh list to show new/updated data
+          })
+          .catch(function(e){ 
+             hideLoader(); btn.disabled=false; btn.textContent= isEdit ? 'Update Order' : 'Save Order'; 
+             err.textContent=(e&&e.message)||'Failed to reach server.'; 
+          });
       }
-      function resetSales(){ ['s_date','s_expectedDelivery','s_clientName','s_contact','s_product','s_advance','s_totalCost'].forEach(function(id){document.getElementById(id).value='';}); msSalesPerson.clear();msSalesType.clear();msAssignedMaster.clear(); designImgs.length=0;measureImgs.length=0; renderThumbs(designImgs,'s_designThumbs');renderThumbs(measureImgs,'s_measureThumbs'); window.scrollTo(0,0); }
+
+      function resetSales(){ 
+         ['s_date','s_expectedDelivery','s_clientName','s_contact','s_product','s_advance','s_totalCost','s_editId'].forEach(function(id){document.getElementById(id).value='';}); 
+         msSalesPerson.clear();msSalesType.clear();msAssignedMaster.clear(); 
+         designImgs.length=0;measureImgs.length=0; 
+         renderThumbs(designImgs,'s_designThumbs');renderThumbs(measureImgs,'s_measureThumbs'); 
+         window.scrollTo({top:0, behavior: 'smooth'}); 
+      }
+
+      // ------------------------------------------------------------- LIST & EDIT
+      function loadRecentOrders(){
+         api({action: 'recentOrders', limit: 10}).then(function(res){
+             hideLoader();
+             var list = document.getElementById('recentList');
+             if(res.ok && res.rows && res.rows.length){
+                 globalRecentData = res.rows;
+                 list.innerHTML = '';
+                 res.rows.forEach(function(row){
+                     var el = document.createElement('div'); el.className = 'rl-item';
+                     el.innerHTML = '<div><div class="rl-meta">'+row.id+' • '+row.date+'</div><div class="rl-title">'+(row.clientName || 'Unknown Client')+' - '+ (row.product || '') +'</div></div>' +
+                                    '<button class="rl-btn" onclick="startEdit(\''+row.id+'\')">Edit</button>';
+                     list.appendChild(el);
+                 });
+             } else {
+                 list.innerHTML = '<div style="text-align:center;color:#9aa0a6;padding:10px;">No recent orders found.</div>';
+             }
+         }).catch(function(){
+             hideLoader();
+             document.getElementById('recentList').innerHTML = '<div style="text-align:center;color:#b00020;padding:10px;">Failed to load list.</div>';
+         });
+      }
+
+      function startEdit(id) {
+         var row = globalRecentData.find(function(r){ return r.id === id; });
+         if(!row) return;
+
+         // Fill fields
+         document.getElementById('s_editId').value = row.id;
+         document.getElementById('s_date').value = row.date;
+         document.getElementById('s_clientName').value = row.clientName;
+         document.getElementById('s_contact').value = row.contact;
+         document.getElementById('s_expectedDelivery').value = row.expectedDelivery;
+         document.getElementById('s_advance').value = row.advance;
+         document.getElementById('s_totalCost').value = row.totalCost;
+         document.getElementById('s_product').value = row.product;
+
+         // Set Dropdowns
+         msSalesPerson.setValue(row.salesPerson ? row.salesPerson.split(', ') : []);
+         msSalesType.setValue(row.salesType ? row.salesType.split(', ') : []);
+         msAssignedMaster.setValue(row.assignedMaster ? row.assignedMaster.split(', ') : []);
+
+         // UI Changes for Edit Mode
+         document.getElementById('editBadge').style.display = 'inline-block';
+         document.getElementById('editBadge').textContent = 'EDITING: ' + row.id;
+         document.getElementById('s_submit').textContent = 'Update Order';
+         document.getElementById('s_cancel').classList.add('show');
+         document.getElementById('imgCard').classList.add('hidden');
+         document.getElementById('imgHint').textContent = "Images cannot be edited here to preserve Drive folders.";
+
+         window.scrollTo({top:0, behavior: 'smooth'});
+         toast('Editing ' + row.id, '');
+      }
+
+      function cancelEdit() {
+         resetSales();
+         document.getElementById('editBadge').style.display = 'none';
+         document.getElementById('s_submit').textContent = 'Save Order';
+         document.getElementById('s_cancel').classList.remove('show');
+         document.getElementById('imgCard').classList.remove('hidden');
+         document.getElementById('imgHint').textContent = "Images stored in a Drive folder per order; the sheet gets the folder link.";
+         toast('Edit cancelled', '');
+      }
+
     </script>
   </body>
 </html>
